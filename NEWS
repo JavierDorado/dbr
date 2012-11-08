@@ -1,0 +1,71 @@
+0.1.2 - 18-mar-2009
+
+General
+
+           Use correct location for loading icons files.
+
+           Fix for bug #2592169: DBR's app name should be "dbr" instead of "-c".
+
+           DBR now provides a toolbar.
+
+           Set the book title into application's tittle.
+
+           Fix for bug #2538638 DBR now plays "Infancy Thomas" book correctly.
+
+New and updated translations (THANKS TO EVERYONE!)
+
+    es      Spanish               Juan Ramón Jiménez García. 
+    Gl      Galician              Juan C. Buño.
+
+====================
+
+0.1.1 - 19-sep-2008
+
+General
+
+           Fix for bug #2073138 about dialog missing.
+
+           Fix for bug #2024308: DBR freezes the syste trying to parse a structure. This was getting the book name.
+
+New and updated translations (THANKS TO EVERYONE!)
+
+    es      Spanish               Juan C. Buño. 
+    Gl      Galician              Juan C. Buño.
+
+====================
+
+0.1.0 - 18-aug-2008
+
+General
+
+           Added __init__.py file to avoid import error when trying to import dbr.dbr.
+
+           Handle situations where dbr is installed in other prefix or PYTHONPATH. Sets dbr 
+           entry point for DBR not dbr.py.
+
+           Mark some missing strings for translation. Added control + space 
+           for play/pause functionality, and control + n control + shift n 
+           for page down and page up respectively.
+
+           Mark menu string for translation. Reorganize some menus.
+
+           Initial support for internacionalization. This provides call to _ function for every module.
+
+           Check for pygst module dependency.
+
+           Add desktop.in file to create a entry in the desktop menu.           
+
+New and updated translations (THANKS TO EVERYONE!)
+
+    es      Spanish               Juan C. Buño. 
+    Gl      Galician              Juan C. Buño.
+
+====================
+
+0.0.1 - 15-jul-2008
+
+           Add initial autotools support.
+
+           Initial import at Subversion repository.
+
+====================

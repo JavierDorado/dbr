@@ -1,0 +1,10 @@
+#!/bin/bash
+
+export PATH="${PATH}:/usr/ccs/bin:/usr/bin:/usr/sbin:/bin:/usr/sfw/bin:/usr/openwin/bin:/usr/X11R6/bin"
+
+    exec_prefix=@prefix@
+    PYTHONPATH=${PYTHONPATH}:@pyexecdir@
+    export PYTHONPATH
+
+    @PYTHON@ -c "import dbr.dbr"
+

@@ -1,0 +1,165 @@
+2009-03-18  Francisco Javier Dorado <fdma@once.es>
+
+        * configure.in
+        * NEWS
+        * README:
+
+           Prep for 0.1.2 release
+
+2009-03-18  Francisco Javier Dorado <fdma@once.es>
+
+        * src/vista.py.in:
+
+           Use @prefix@/share/icons for loading icons files.
+
+2009-03-18  Francisco Javier Dorado <fdma@once.es>
+
+        * src/dbr.py:
+
+           Fixed bug #2592169 DBR's app name should be "dbr" not "-c"
+
+2009-03-17  Juan Ramón Jiménez García <jjig@once.es>
+
+        * src/vista.py:
+
+           Created a toolbar.
+           Set book title in aplication title when a book is opened
+           
+        * icons/bookmarks.png:
+        
+            Created a icon for the bookmark toolbar option
+            
+
+2009-03-06  Francisco Javier Dorado <javier@tiflolinux.org>
+
+        * authors:
+
+           Add Juan Ramón to the authors file.
+
+2009-02-10  Francisco Javier Dorado <javier@tiflolinux.org>
+
+        * src/vista.py:
+
+           Fixed a localization string on the "Go to" menu.
+
+2009-01-28  Francisco Javier Dorado <javier@tiflolinux.org>
+
+        * src/libro.py:
+
+           Fix for bug 2530638 Can not play Infancy of Thomas daisy 2.02 book. 
+             Thanks Willem for testing and reporting this.
+
+2008-10-09  Francisco Javier Dorado Martínez <javier@tiflolinux.org>
+
+        * src/vista.py:
+
+           Fix for bug #2088248.
+
+2008-09-19  francisco Javier Dorado Martínez <javier@tiflolinux.org>
+
+        * configure.in:
+          NEWS:
+          README:
+
+           Prep for 0.1.1 release.
+
+2008-09-01  Francisco Javier Dorado <javier@tiflolinux.org>
+
+        * src/controlador.py.in:
+          src/vista.py:
+
+           Fix for bug 2073138 about dialog missing.
+
+2008-08-28  Francisco Javier Dorado <javier@tiflolinux.org>
+
+        * src/libro.py:
+
+           Fix for bug #2024308: DBR freezes the syste trying to parse a structure. This was getting the book name.
+
+2008-08-21  Francisco Javier Dorado Martínez <javier@tiflolinux.org>
+
+        * src/utils:
+          src/utils/lowercase_files.py:
+          src/utils/uppercase_files.py:
+
+           Add these scripts for changing the case on .smil and .mp3 files.
+
+          2008-08-18  Francisco Javier Dorado Martínez <javier@tiflolinux.org>
+
+        * configure.in:
+          README:
+          NEWS:
+
+           Prep for 0.1.0 release.
+
+        * src/__init__.py:
+          src/Makefile.am:
+
+           Added __init__.py file to avoid import error when trying to import dbr.dbr.
+
+2008-08-01  Francisco Javier Dorado <javier@tiflolinux.org>
+
+        * src/dbr.in:
+          src/dbr.py:
+
+           Handle situations where dbr is installed in other prefix or PYTHONPATH. Sets dbr 
+           entry point for DBR not dbr.py.
+
+        * src/vista.py:
+
+           Mark some missing strings for translation. Added control + space 
+           for play/pause functionality, and control + n control + shift n 
+           for page down and page up respectively.
+
+2008-07-29  Francisco Javier Dorado <javier@tiflolinux.org>
+
+        * src/controlador.py:
+
+           Mark some missing strings for translation.
+2008-07-19  Francisco Javier Dorado <javier@tiflolinux.org>
+
+        * src/vista.py:
+           Mark menu string for translation. Reorganize some menus.
+
+2008-07-18  Francisco Javier Dorado <javier@tiflolinux.org>
+
+        * configure.in:
+          src/controlador.py:
+          src/libro.py:
+          src/registro.py:
+          src/reproductor.py:
+          src/vista.py:
+          src/db_i18n.py
+
+           Initial support for internacionalization. This provides call to _ function for every module.
+
+        * src/controlador.py:
+          src/libro.py:
+          src/registro.py:
+          src/reproductor.py:
+          src/vista.py:
+           Remove /usr/bin/env python call in non executable files.
+
+        * MAINTAINERS:
+           Add Francisco Javier Dorado as a maintainer for this project.
+
+2008-07-17  Francisco Javier dorado <javier@tiflolinux.org>
+
+        * configure.in:
+           Changed version to 0.0.2pre.
+           Check for pygst module dependency.
+
+        * Makefile.am:
+           Add desktop.in file to create a entry in the desktop menu.           
+
+2008-07-16  Francisco Javier Dorado <javier@tiflolinux.org>
+
+        * AUTHORS:
+          Makefile.am:
+          Configure.in:
+          src/Makefile.am:
+           Add initial autotools support.
+
+2008-07-14  Francisco Javier Dorado <javier@tiflolinux.org>
+
+           Initial import at Subversion repository.

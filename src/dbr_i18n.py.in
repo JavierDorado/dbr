@@ -1,0 +1,64 @@
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Library General Public
+# License as published by the Free Software Foundation; either
+# version 2 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Library General Public License for more details.
+#
+# You should have received a copy of the GNU Library General Public
+# License along with this library; if not, write to the
+# Free Software Foundation, Inc., Franklin Street, Fifth Floor,
+# Boston MA  02110-1301 USA.
+
+"""Provides i18n support for dbr using the gettext module.  Tells
+gettext where to find localized strings and creates an alias, _, that
+maps to the gettext.gettext function.  This function will accept a
+string and return a localized string for that string.
+"""
+
+import os       # to get localdir path
+import gettext  # to get gettext (i18n) support
+
+# Alias gettext.gettext to _ and gettext.ngettext to ngettext
+#
+_ = gettext.gettext
+ngettext = gettext.ngettext
+
+# Tell gettext where to find localized strings.
+#
+localedir = os.path.join ("@prefix@", "@DATADIRNAME@", "locale")
+gettext.bindtextdomain ("@GETTEXT_PACKAGE@", localedir)
+gettext.textdomain("dbr")
+
+try:
+    import gtk.glade
+
+    gtk.glade.bindtextdomain ("@GETTEXT_PACKAGE@", localedir)
+    gtk.glade.textdomain("dbr")
+except:
+    pass
+########################################################################
+#                                                                      #
+# Utility methods to facilitate easier translation                     #
+#                                                                      #
+########################################################################
+
+def Q_(s):
+    """Provide qualified translatable strings.  Some strings translate to
+    more than one string in another locale.  We provide a convention to
+    provide contextual information for the string so that translators can
+    do the right thing: we embed a '|' character in the string to be
+    translated.  The string before the '|' provides the context, and the
+    string after the '|' provides the string to translate.  For example:
+    'radiobutton|selected' and 'text|selected' are used to provide context
+    for the word 'selected'.
+
+    We need to handle the case where the string has not been translated,
+    however, and we do so by stripping off the contextual information."""
+
+    s = _(s)
+    s = s[s.find('|')+1:]
+    return s

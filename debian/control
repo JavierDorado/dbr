@@ -1,0 +1,14 @@
+Source: dbr
+Section: unknown
+Priority: extra
+Maintainer: Francisco Javier Dorado Martinez (tiflolinux) <javier@tiflolinux.org>
+Build-Depends: cdbs, debhelper (>= 5), autotools-dev
+Standards-Version: 3.7.2
+
+Package: dbr
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: A GTK Daisy Talking Books reader
+ DBR is a GTK application that let blind and visually impaired people 
+ to access and read books in the Daisy 2.02format.
+

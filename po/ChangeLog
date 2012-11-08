@@ -1,0 +1,68 @@
+2009-03-25  Francisco Javier Dorado Martínez <javier@tiflolinux.org>
+
+        * gl.po:
+
+           Updated galician translation by Juan C. Buño.
+           
+2009-03-18  Juan Ramón Jiménez Garcíao <jjig@once.es>
+
+        * es.po:
+
+           Updated spanish translation. Included toolbar buttons
+           
+2009-03-03  Juan Ramón Jiménez Garcíao <jjig@once.es>
+
+        * es.po:
+
+           Updated spanish translation. Fix a bad typed string.
+2009-02-10  Francisco Javier Dorado <javier@tiflolinux.org>
+
+        * es.po:
+
+           Updated spanish translation. Fix a bad typed string.
+
+2009-01-14  Juan C. Buño <quetzatl@eresmas.net>
+
+        * es.po:
+          gl.po:
+
+           Updated spanish and galician translations by Juan C. Buño.
+
+2008-10-23  Juan C. Buño <quetzatl@eresmas.net>
+
+        * es.po:
+          gl.po:
+
+           Updated spanish an galician translation by Juan C. Buño
+
+2008-09-19  Francisco Javier Dorado <javier@tiflolinux.org>
+
+        * po/es.po:
+
+           Updated spanish translation.
+
+2008-09-07  Quetzatl <quetzatl@eresmas.net> via Francisco Javier Dorado <javier@tiflolinux.org>
+
+* po/es.po:
+          po/gl.po:
+             Updated spanish and galician translations by Juan C. Buño.
+
+2008-08-05  Quetzatl <quetzatl@eresmas.net> via Francisco Javier Dorado <javier@tiflolinux.org>
+
+        * po/es.po:
+          po/gl.po:
+             Updated spanish and galician translations by Juan C. Buño.
+
+2008-07-28 Quetzatl <quetzatl@eresmas.net> via Francisco Javier Dorado <javier@tiflolinux.org>
+
+        * po/es.po:
+          po/gl.po:
+          po/linguas:
+             Added Galician and updated Spanish language by Juan C. Buño
+
+2008-07-18 Francisco Javier Dorado <javier@tiflolinux.org>
+
+        * es.po:
+          LINGUAS:
+
+             Add initial spanish support by Francisco Javier Dorado Martínez.

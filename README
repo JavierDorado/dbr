@@ -1,0 +1,7 @@
+DBR 0.1.2
+
+DBR is an application for accessing and reading books in the Daisy 2.02 standard. Although Daisy 3.0 is not supported
+we are working to have it in the future.
+Daisy books are also known as DTB's (Digital/Daisy Talking Books.
+
+DBR uses GTK (PyGTK) for the interface and Gstreamer for audio output (PyGST).
