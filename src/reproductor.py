@@ -52,7 +52,7 @@ class Reproductor:
     self.reproductor.add(volume)
     # speed = gst.element_factory_make("speed", "speed")
     # self.reproductor.add(speed)
-    sink = gst.element_factory_make("alsasink", "alsa-output")
+    sink = gst.element_factory_make("pulsesink", "pulseaudio-output")
     self.reproductor.add(sink)
     gst.element_link_many(fuente, decoder, conv, volume, sink)
     self.reproductor.set_state(gst.STATE_NULL)
