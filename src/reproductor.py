@@ -174,7 +174,7 @@ class Reproductor:
       self.reproductor.set_state(gst.STATE_PAUSED)
       self.estado = "Pausado"
       self.activar = "No"
-      self.c.change_play_pause_tollbutton(gst.STATE_PAUSED)
+#      self.c.change_play_pause_tollbutton(gst.STATE_PAUSED)
     elif self.estado == "Pausado" or self.activar == "No":
       self.reproductor.set_state(gst.STATE_PLAYING)
       self.estado = "Reproduciendo"
