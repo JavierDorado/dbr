@@ -24,39 +24,39 @@ import gst
 
 from dbr_i18n import _          #For i18n support
 
-class Reproductor:
+class Player:
   """
-  Clase para la reproducción de un libro
+  Class to handle playback of a DTB
   """
 
 
 
-  def setControlador(self, c):
+  def setController(self, c):
     self.c = c
 
   def __init__(self):
     """
-    Inicializa el reproductor para la reproducción de los archivos de audio del libro DAISY
+    Initializes the player for playing audio tracks of the DTB
     """
-    self.estado = "Parado"
-    self.activar = "Si"
+    self.state = "Stopped"
+    self.activate = "Yes"
     self.time_format = gst.Format(gst.FORMAT_TIME)
-    self.reproductor = gst.Pipeline("player")
+    self.player = gst.Pipeline("player")
     fuente = gst.element_factory_make("filesrc", "file-source")
-    self.reproductor.add(fuente)
+    self.player.add(fuente)
     decoder = gst.element_factory_make("mad", "mp3-decoder")
-    self.reproductor.add(decoder)
+    self.player.add(decoder)
     conv = gst.element_factory_make("audioconvert", "converter")
-    self.reproductor.add(conv)
+    self.player.add(conv)
     volume = gst.element_factory_make("volume", "volume")
-    self.reproductor.add(volume)
+    self.player.add(volume)
     # speed = gst.element_factory_make("speed", "speed")
-    # self.reproductor.add(speed)
+    # self.player.add(speed)
     sink = gst.element_factory_make("pulsesink", "pulseaudio-output")
-    self.reproductor.add(sink)
+    self.player.add(sink)
     gst.element_link_many(fuente, decoder, conv, volume, sink)
-    self.reproductor.set_state(gst.STATE_NULL)
-    bus = self.reproductor.get_bus()
+    self.player.set_state(gst.STATE_NULL)
+    bus = self.player.get_bus()
     bus.add_signal_watch()
     bus.connect('message', self.on_message)
 
@@ -91,137 +91,134 @@ class Reproductor:
 
   def start_stop(self, l):
     i = 0
-    if self.estado == "Parado":
-      while ((self.reproductor.get_state() == gst.STATE_NULL) and (i <= range(len(l)))):
-        print l[i][0]
+    if self.state == "Stopped":
+      while ((self.player.get_state() == gst.STATE_NULL) and (i <= range(len(l)))):
         if os.path.exists(l[i][0]):
-          print "aquí tb estoy"
-          self.estado = "Reproduciendo"
-          self.reproductor.get_by_name("file-source").set_property('location', l[0])
-          self.reproductor.set_state(gst.STATE_PLAYING)
+          self.state = "Playing"
+          self.player.get_by_name("file-source").set_property('location', l[0])
+          self.player.set_state(gst.STATE_PLAYING)
           time.sleep(0.1)
-          self.reproductor.seek(1.0, self.time_format, gst.SEEK_FLAG_FLUSH, gst.SEEK_TYPE_SET, l[i:1], gst.SEEK_TYPE_SET, l[i:2])
+          self.player.seek(1.0, self.time_format, gst.SEEK_FLAG_FLUSH, gst.SEEK_TYPE_SET, l[i:1], gst.SEEK_TYPE_SET, l[i:2])
     else:
-      print "hola"
-      while self.reproductor.get_state == (gst.STATE_PAUSED or gst.STATE_PLAYING) and i < len(l):
-        if self.reproductor.get_message == gst.MESSAGE_EOS:
-          self.reproductor.set_state(gst.STATE_NULL)
-          self.estado = "Parado"
-          self.reproductor.set_state(gst.STATE_PLAYING)
+      while self.player.get_state == (gst.STATE_PAUSED or gst.STATE_PLAYING) and i < len(l):
+        if self.player.get_message == gst.MESSAGE_EOS:
+          self.player.set_state(gst.STATE_NULL)
+          self.state = "Stopped"
+          self.player.set_state(gst.STATE_PLAYING)
           time.sleep(0.1)
           self.player.seek(1.0, self.time_format, gst.SEEK_FLAG_FLUSH, gst.SEEK_TYPE_SET, l[i:1], gst.SEEK_TYPE_SET, l[i:2])
           i = i + 1
 
 
-  def reproducir(self, fichero, pos_ini, pos_fin):
+  def play(self, file, pos_begin, pos_end):
     """
-    Método para reproducir una pista de audio.
-    fichero: fichero a reproducir
-    pos_ini: posición de inicio de la reproducción
-    pos_fin: posición final de reproducción
+    Function for playing an audio track.
+    file: filename which to play
+    pos_begin: Begin position for playing
+    pos_end: End position for playing
     """
-    if self.estado == "Parado" and self.activar == "Si":
-      if os.path.exists(fichero):
-        self.estado = "Reproduciendo"
-        self.reproductor.get_by_name("file-source").set_property('location', fichero)
-        self.reproductor.set_state(gst.STATE_PAUSED)
+    if self.state == "Stopped" and self.activate == "Yes":
+      if os.path.exists(file):
+        self.state = "Playing"
+        self.player.get_by_name("file-source").set_property('location', file)
+        self.player.set_state(gst.STATE_PAUSED)
         time.sleep(0.0001)
-        self.reproductor.seek(1.0, self.time_format, gst.SEEK_FLAG_FLUSH, gst.SEEK_TYPE_SET, pos_ini, gst.SEEK_TYPE_SET, pos_fin)
-        self.reproductor.set_state(gst.STATE_PLAYING)
-    elif (self.estado == "Pausado" or self.estado == "Parado") and self.activar == "No":
-      if os.path.exists(fichero):
-        self.estado = "Pausado"
-        self.reproductor.set_state(gst.STATE_NULL)
-        self.reproductor.get_by_name("file-source").set_property('location', fichero)
-        self.reproductor.set_state(gst.STATE_PAUSED)
+        self.player.seek(1.0, self.time_format, gst.SEEK_FLAG_FLUSH, gst.SEEK_TYPE_SET, pos_begin, gst.SEEK_TYPE_SET, pos_end)
+        self.player.set_state(gst.STATE_PLAYING)
+    elif (self.state == "Paused" or self.state == "Stopped") and self.activate == "No":
+      if os.path.exists(file):
+        self.state = "Paused"
+        self.player.set_state(gst.STATE_NULL)
+        self.player.get_by_name("file-source").set_property('location', file)
+        self.player.set_state(gst.STATE_PAUSED)
         time.sleep(0.0001)
-        self.reproductor.seek(1.0, self.time_format, gst.SEEK_FLAG_FLUSH, gst.SEEK_TYPE_SET, pos_ini, gst.SEEK_TYPE_SET, pos_fin)
-        self.reproductor.set_state(gst.STATE_PAUSED)
+        self.player.seek(1.0, self.time_format, gst.SEEK_FLAG_FLUSH, gst.SEEK_TYPE_SET, pos_begin, gst.SEEK_TYPE_SET, pos_end)
+        self.player.set_state(gst.STATE_PAUSED)
 
 
 
-  def detener(self):
+  def stop(self):
     """
-    Método para detener la reproducción de una pista de audio
+    Function for stopping an audio track playback
     """
-    if self.estado == "Reproduciendo" or self.estado == "Pausado":
-      self.reproductor.set_state(gst.STATE_NULL)
-      self.estado = "Parado"
+    if self.state == "Playing" or self.state == "Paused":
+      self.player.set_state(gst.STATE_NULL)
+      self.state = "Stopped"
 
 
   def on_message(self, bus, message):
     """
-    Método para detectar cuando se produce algun mensaje en gst h
-    bus: bus del pipeline
-    message: mensaje emitido por gst
+    Function for handling gstreamer messages
+    bus: bus of pipeline
+    message: message received from Gstreamer
     """
     t = message.type
     if t == gst.MESSAGE_EOS:
-      self.reproductor.set_state(gst.STATE_NULL)
-      self.estado = "Parado"
-      self.c.sinc_vista_audio()
+      self.player.set_state(gst.STATE_NULL)
+      self.state = "Stopped"
+      self.c.sync_view_audio()
     elif t == gst.MESSAGE_ERROR:
-      self.reproductor.set_state(gst.STATE_NULL)
-      self.estado = "Parado"
+      self.player.set_state(gst.STATE_NULL)
+      self.state = "Stopped"
       err, debug = message.parse_error()
       print "Error: %s" % err, debug
 
-  def reproducir_pausar(self):
+  def play_pause(self):
     """
-    Método para pausar o reanudar la reproducción de un libro
+    Function for toggle between play and pause
     """
-    if self.estado == "Reproduciendo":
-      self.reproductor.set_state(gst.STATE_PAUSED)
-      self.estado = "Pausado"
-      self.activar = "No"
-#      self.c.change_play_pause_tollbutton(gst.STATE_PAUSED)
-    elif self.estado == "Pausado" or self.activar == "No":
-      self.reproductor.set_state(gst.STATE_PLAYING)
-      self.estado = "Reproduciendo"
-      self.activar = "Si"
-      self.c.change_play_pause_tollbutton(gst.STATE_PLAYING)
+    if self.state == "Playing":
+      self.player.set_state(gst.STATE_PAUSED)
+      self.state = "Paused"
+      self.activate = "No"
+#      self.c.change_play_pause_toolbutton(gst.STATE_PAUSED)
+    elif self.state == "Paused" or self.activate == "No":
+      self.player.set_state(gst.STATE_PLAYING)
+      self.state = "Playing"
+      self.activate = "Yes"
+      self.c.change_play_pause_toolbutton(gst.STATE_PLAYING)
 
 
-  def obtener_ins_actual(self):
+  def get_current_ns(self):
     """
-    Método para obtener la posición en nanosegundos de reproducción de la pista actual
+    Function to get current playing track position in nanoseconds 
     """
-    pos = self.reproductor.query_position(self.time_format, None)[0]
+    pos = self.player.query_position(self.time_format, None)[0]
     return pos
 
 
-  def obtener_estado(self):
+  def get_state(self):
     """
-    Método para obtener el estado actual de la reproducción
+    Returns the player status
     """
-    return self.estado
+    return self.state
 
 
-  def cambiar_volumen(self, inc):
+  def change_volume(self, inc):
     """
-    Método para cambiar el volumen del reproductor
-    inc: parámetro con  el aumento o disminución del volumen
+    Changes player volume
+    inc: volume value positive or negative value
     """
-    volumen_actual = self.reproductor.get_by_name("volume").get_property("volume")
-    nuevo_volumen = volumen_actual + inc
-    if (nuevo_volumen >= 0) and (nuevo_volumen <= 10):
-      self.reproductor.get_by_name("volume").set_property('volume', nuevo_volumen)
+    current_volume = self.player.get_by_name("volume").get_property("volume")
+    new_volume = current_volume + inc
+    if (new_volume >= 0) and (new_volume <= 10):
+      self.player.get_by_name("volume").set_property('volume', new_volume)
 
 
-  def obtener_volumen(self):
+  def get_volume(self):
     """
-    Método para obtener el nivel de volumen actual
+    Returns current volume 
     """
-    return self.reproductor.get_by_name("volume").get_property("volume")
+    return self.player.get_by_name("volume").get_property("volume")
 
 
 
-  def silenciar(self):
+  def mute(self):
     """
-    Método para activar o desactivar el sonido
+    Toggles mute 
     """
-    silencio = self.reproductor.get_by_name("volume").get_property("mute")
-    if silencio == True:
-      self.reproductor.get_by_name("volume").set_property("mute", False)
+    mute = self.player.get_by_name("volume").get_property("mute")
+    if mute == True:
+      self.player.get_by_name("volume").set_property("mute", False)
     else:
-      self.reproductor.get_by_name("volume").set_property("mute", True)
+      self.player.get_by_name("volume").set_property("mute", True)
