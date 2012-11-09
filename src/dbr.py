@@ -20,19 +20,19 @@ sys.argv[0]="dbr"
 import pygtk
 pygtk.require('2.0')
 import gtk
-import vista, controlador, reproductor, registro
+import view, controller, player, settings
 
 from dbr_i18n import _          #for i18n support
 
 def main():
   """
-  Método principal de la aplicación
+  Main method for the application
   """
-  r = reproductor.Reproductor()
-  reg = registro.Registro()
-  c = controlador.Controlador(r, reg)
-  v = vista.Vista(c)
-  r.setControlador(c)
+  p = player.Player()
+  sets = settings.Settings()
+  c = controller.Controller(p, sets)
+  v = view.View(c)
+  p.setController(c)
 
   gtk.main()
   return 0
