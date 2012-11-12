@@ -89,7 +89,7 @@ class Player:
           i = i + 1
           self.reproductor.set_state(gst.STATE_NULL)
 
-  def start_stop(self, l):
+  def startStop(self, l):
     i = 0
     if self.state == "Stopped":
       while ((self.player.get_state() == gst.STATE_NULL) and (i <= range(len(l)))):
@@ -146,7 +146,7 @@ class Player:
       self.state = "Stopped"
 
 
-  def on_message(self, bus, message):
+  def onMessage(self, bus, message):
     """
     Function for handling gstreamer messages
     bus: bus of pipeline
@@ -163,7 +163,7 @@ class Player:
       err, debug = message.parse_error()
       print "Error: %s" % err, debug
 
-  def play_pause(self):
+  def playPause(self):
     """
     Function for toggle between play and pause
     """
@@ -179,7 +179,7 @@ class Player:
       self.c.change_play_pause_toolbutton(gst.STATE_PLAYING)
 
 
-  def get_current_ns(self):
+  def getCurrentNs(self):
     """
     Function to get current playing track position in nanoseconds 
     """
@@ -187,14 +187,14 @@ class Player:
     return pos
 
 
-  def get_state(self):
+  def getState(self):
     """
     Returns the player status
     """
     return self.state
 
 
-  def change_volume(self, inc):
+  def changeVolume(self, inc):
     """
     Changes player volume
     inc: volume value positive or negative value
@@ -205,7 +205,7 @@ class Player:
       self.player.get_by_name("volume").set_property('volume', new_volume)
 
 
-  def get_volume(self):
+  def getVolume(self):
     """
     Returns current volume 
     """

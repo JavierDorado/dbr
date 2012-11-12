@@ -12,165 +12,154 @@ import gst
 
 from dbr_i18n import _          #For i18n support
 
-
-# Comprobacion la version de pygtk
-if gtk.pygtk_version < (2,3,90):
-  print "PyGtk 2.3.90 or later required for this example"
-  raise SystemExit
-
-
-class Controlador:
+class Controller:
   """
-  Clase Controlador para el control entre la clase vista y las clases Libro, Reproductor y Registro
+  Callbacks functions for the view, player, book and settings
   """ 
 
-  def setVista(self, v):
+  def setView(self, v):
     self.v = v
 
 
-  def __init__(self, r, reg):
+  def __init__(self, p, sets):
     """
-    Inicia un objeto Controlador para la gestión de las retrollamadas del interfaz
-    r: es un objeto Reproductor
-    reg: es un objeto Registro
+    Controller object initialization
     """
-    self.r = r
-    self.l = None
-    self.reg = reg
+    self.p = p
+    self.b = None
+    self.sets = sets
 
 
-  def obtener_configuracion(self):
+  def getConfiguration(self):
     """
-    Método para obtener la configuración del DBR. Si es la primera vez que se ejecuta la aplicación, iniciará la creación del fichero de configuración
+    Gets configuration, if not exists create it
     """
-    lista_indice = []
-    registro = self.reg.obtener_configuracion()
-    if registro[0] != None:
-      self.r.cambiar_volumen(registro[5]-1)
-      if os.path.exists(registro[1]):
-        self.l = libro.Libro(registro[1], (registro[2]), (registro[3]), registro[4])
-        if registro[0] == self.l.obtener_nombre():
-          lista_indice = self.l.obtener_indice()
+    toc = []
+    configuration = self.settings.getConfiguration()
+    if configuration[0] != None:
+      self.p.changeVolume(configuration[5]-1)
+      if os.path.exists(configuration[1]):
+        self.b = book.Book(configuration[1], (configuration[2]), (configuration[3]), configuration[4])
+        if configuration[0] == self.b.getBookTitle():
+          toc = self.b.getToc()
         else:
-          self.l = None
+          self.b = None
       else:
-        self.l = None
+        self.b = None
     else:
       pass
-    return lista_indice, registro[2]
+    return toc, configuration[2]
 
 
   def destroy(self, widget):
     """
-    Método para destruir una ventana
+    Destroy window
     """
     return True
 
 
-  def carga_fichero_inicial(self):
+  def loadLatestBook(self):
     """
-    Método para reproducir el último libro reproducido al cargar el DBR
+    Load the last played book
     """
-    fichero, pos_ini, pos_fin = self.l.obtener_pista()
-    self.r.reproducir(fichero, pos_ini, pos_fin)
+    file, pos_begin, pos_end = self.b.getAudioTrack()
+    self.p.play(file, pos_begin, pos_end)
 
 
-  def cargaFichero(self, w):
+  def openBook(self, w):
     """
-    Método para cargar el fichero que contiene el índice del libro
+    Handle opening a book 
     """
-    # Creacion de un nuevo control de seleccion de fichero
-    seleccion = gtk.FileChooserDialog(_("Open book"), None, gtk.FILE_CHOOSER_ACTION_OPEN, (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK))
-    seleccion.set_default_response(gtk.RESPONSE_OK)
+    selection = gtk.FileChooserDialog(_("Open book"), None, gtk.FILE_CHOOSER_ACTION_OPEN, (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK))
+    selection.set_default_response(gtk.RESPONSE_OK)
 
     # filtro para mostrar solo los archivos llamados ncc.html
-    filtro = gtk.FileFilter()
+    filter = gtk.FileFilter()
     path = os.path.abspath("ncc")
-    seleccion.set_filename(path)
-    # Extension permitida para el fichero
-    filtro.add_pattern("*.html")
-    seleccion.add_filter(filtro)
+    selection.set_filename(path)
+    # Configure file extension
+    filter.add_pattern("*.html")
+    selection.add_filter(filtro)
 
-    response = seleccion.run()
+    response = selection.run()
     if response == gtk.RESPONSE_OK:
       try:
-        # Se carga el libro
-        nombre = seleccion.get_filename()
-        self.l = libro.Libro(nombre)
-
+        # Open the book
+        filename = selection.get_filename()
+        self.b = book.Book(filename)
 
       except IOError:
-        self.mostrar_mensaje(_("Failed to open"), _(" The book can not be opened"))
+        self.showMessage(_("Failed to open"), _(" The book can not be opened"))
 
 
     elif response == gtk.RESPONSE_CANCEL:
-      self.mostrar_mensaje(_("Canceled selection"), _("No book has been selected"))
-    seleccion.destroy()
-    indice = self.l.obtener_indice()
-    if len(indice) > 1:
-      return indice
+      self.showMessage(_("Canceled selection"), _("No book has been selected"))
+    selection.destroy()
+    toc = self.b.getToc()
+    if len(toc) > 1:
+      return toc
 
-  def change_play_pause_tollbutton(self, state):
+  def change_play_pause_toolbutton(self, state):
     if state == gst.STATE_PAUSED:
       self.v.view_play_icon()
     else:
       self.v.view_pause_icon()
 
-  def buscar_libro_callback(self, w, data):
+  def openRecentBookCallback(self, w, data):
     """
-    Método para controlar la búsqueda de los libros almacenados en el fichero de configuración
+    Open a recently opened book
     """
-    reproducir = False
-    if self.r.obtener_estado() == "Reproduciendo":
-      reproducir = True
-      self.r.reproducir_pausar()
-    libros = self.reg.buscar_libros()
-    if libros != []:
-      nombre_libros = []
-      for i in range(len(libros)):
-        nombre_libros.append(libros[i][0])
-      indice_libro = self.mostrar_combobox(_("Find books"), _("Choose the book which you want to open"), nombre_libros)
-      if indice_libro != None:
-        l_aux = libro.Libro(libros[indice_libro][1])
-        if l_aux.obtener_nombre() == libros[indice_libro][0]:
-          self.r.detener()
-          self.v.limpiar_modelo()
-          self.l = l_aux
-          self.v.mostrar_libro(self.l.obtener_indice())
-          self.sinc_vista_audio()
+    play = False
+    if self.p.getState() == "Playing":
+      play = True
+      self.p.playPause()
+    books = self.sets.showBooks()
+    if books != []:
+      book_titles = []
+      for i in range(len(books)):
+        book_titles.append(books[i][0])
+      book_index = self.showCombobox(_("Recently opened books"), _("Choose the book which you want to open"), book_titles)
+      if book_index != None:
+        aux_book = book.Book(books[book_toc][1])
+        if aux_book.getBookTitle() == books[book_index][0]:
+          self.p.stop()
+          self.v.clearModel()
+          self.b = aux_book
+          self.v.displayBook(self.b.getToc())
+          self.sync_view_audio()
         else:
-          self.mostrar_mensaje(_("Warning"), _("Specified book doesn't match with the book currently in that path"))
+          self.showMessage(_("Warning"), _("Specified book doesn't match with the book currently in that path"))
       else:
-        self.mostrar_mensaje("Warning", _("You have not selected any book"))
+        self.showMessage("Warning", _("You have not selected any book"))
     else:
-      self.mostrar_mensaje(_("Warning"), _("There are no saved books"))
-    if (self.r.obtener_estado() == "Pausado") and reproducir:
-      self.r.reproducir_pausar()
+      self.showMessage(_("Warning"), _("There are no saved books"))
+    if (self.p.getState() == "Paused") and play:
+      self.p.playPause()
 
 
 
-  def cerrar_libro_callback(self, w, data):
+  def closeBookCallback(self, w, data):
     """
-    Método para controlar el cierre de un libro
+    Close book callback
     """
-    if self.comprobar_libro():
-      self.r.detener()
-      self.l = None
-      self.v.limpiar_modelo()
+    if self.bookOpened():
+      self.p.stop()
+      self.b = None
+      self.v.clearModel()
 
 
-  def cerrar_aplicacion(self):
+  def closeApplication(self):
     """
-    Método que cierra la aplicación y que guarda la posición de lectura y la configuración del reproductor
+    Closes the application saving the reading position and configuration
     """
-    if self.comprobar_libro():
-      self.r.detener()
-      registro = self.l.obtener_datos_para_marca()
-      volumen = self.r.obtener_volumen()
-      registro.append(volumen)
-      self.reg.escribir_configuracion(registro)
+    if self.bookOpened():
+      self.p.stop()
+      configuration = self.b.getExactPosition()
+      volume = self.p.getVolume()
+      configuration.append(volume)
+      self.sets.writeConfiguration(configuration)
 
-
+##
   def mostrar_inf_libro_callback(self, w, data):
     """
     Método para mostrar información general del libro
@@ -277,11 +266,11 @@ class Controlador:
       self.mostrar_mensaje(_("Warning"), _("Tehre are currently no playing book"))
 
 
-  def comprobar_libro(self):
+  def bookOpened(self):
     """
-    Método que comprueba si hay algun libro cargado
+    Checks if there's an opened book
     """
-    if self.l == None:
+    if self.b == None:
       return False
     else:
       return True

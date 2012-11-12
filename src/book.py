@@ -36,26 +36,26 @@ class Book:
     self.next_booknodes_pos = self.pos_booknodes = pos_booknodes
     self.audio_pos = audio_pos
     self.tree = MD.parse(file)
-    self.book_name = self.getBookName()
+    self.book_title = self.getBookTitle()
     self.book_path = file
     self.getTree()
     self.getAudioTracks(self.booknodes[self.pos_booknodes])
 
-  def getBookName(self):
+  def getBookTitle(self):
     """
-    Returns the book's name
+    Returns the book's title
     """
-    book_name = ''
+    book_title = ''
     meta = self.tree.getElementsByTagName('meta')
     found = 0
     i = 0
     while found == 0 and i < len(meta): #fjdm: Need to change this structure 
       if meta[i].hasAttribute('name'):
         if meta[i].attributes['name'].value == 'dc:title':
-          book_name = meta[i].attributes['content'].value
+          book_title = meta[i].attributes['content'].value
           found = 1
       i = i+1
-    return book_name
+    return book_title
 
 
   def getNumberOfPages(self):
@@ -79,7 +79,7 @@ class Book:
     Returns  current playing and book position for saving a bookmark
     """
     info = []
-    info.append(self.book_name)
+    info.append(self.book_title)
     info.append(self.book_path)
     info.append(self.toc_pos)
     info.append(self.pos_booknodes)
