@@ -372,17 +372,15 @@ class Libro:
     a = nodo.getElementsByTagName('a')
     valor = a[0].attributes['href']
     fichero = valor.value.split("#")
-    print "SMIL file: " + fichero[0] #dbg
+#    print "SMIL file: " + fichero[0] #dbg
     ruta_completa = self.ruta[0] + fichero[0]
-    print "Full path to the file is: " + ruta_completa #dbg
+#    print "Full path to the file is: " + ruta_completa #dbg
     smil = MD.parse(ruta_completa) #Parse the smil file
     seq = smil.getElementsByTagName('seq')
     par = seq[0].getElementsByTagName('par')
     if len(par) > 0:
       for i in range(len(par)):
         text = par[i].getElementsByTagName('text')
-        at = text[0].attributes['id'].value
-#        if at == fichero[1]: 
         audio = par[i].getElementsByTagName('audio')
         for j in range(len(audio)):
           if audio[j].hasAttribute('clip-begin'):
@@ -393,7 +391,7 @@ class Libro:
             l.append(inicio)
             fin = self.obtener_tiempo(audio[j].attributes['clip-end'].value)
             l.append(fin)
-            print "Audio track " + str(j)+ "\n" + "Audio file is: " + str(l[0]) + "Begins at " + str(l[1]) + " and ends at " + str(l[2]) #dbg
+#            print "Audio track " + str(j)+ "\n" + "Audio file is: " + str(l[0]) + "Begins at " + str(l[1]) + " and ends at " + str(l[2]) #dbg
             m.append(l)
     else:
       audio = seq[0].getElementsByTagName('audio')
@@ -407,7 +405,7 @@ class Libro:
           fin = self.obtener_tiempo(audio[j].attributes['clip-end'].value)
           l.append(fin)
           m.append(l)
-          print "Audio track " + str(j) + "\n" + "Audio file is: " + str(l[0]) + "Begins at " + str(l[1]) + " and ends at " + str(l[2]) #dbg
+#          print "Audio track " + str(j) + "\n" + "Audio file is: " + str(l[0]) + "Begins at " + str(l[1]) + " and ends at " + str(l[2]) #dbg
 
     self.m = m
 
