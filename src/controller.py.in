@@ -73,7 +73,7 @@ class Controller:
     selection = gtk.FileChooserDialog(_("Open book"), None, gtk.FILE_CHOOSER_ACTION_OPEN, (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK))
     selection.set_default_response(gtk.RESPONSE_OK)
 
-    # filtro para mostrar solo los archivos llamados ncc.html
+    # Filter all ncc.html filenames
     filter = gtk.FileFilter()
     path = os.path.abspath("ncc")
     selection.set_filename(path)
@@ -194,7 +194,7 @@ class Controller:
       self.showMessage(_("Warning"), _("There are currently no playing book"))
 
 
-  def displayPlayingTimeCallback(self, w, data):
+  def displayCurrentPlayingTimeCallback(self, w, data):
     """
     Displays playing time in hh:mm:ss format
     """
