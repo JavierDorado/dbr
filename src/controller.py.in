@@ -203,67 +203,67 @@ class Controller:
       if self.p.getState() == "Playing":
         play = True
         self.p.playPause()
-      pos = self.p.obtener_ins_actual()
+      pos = self.p.getCurrentNs()
       pos = pos / 1000000000
-      segundos, aux = self.l.obtener_pos_actual_audio()
-      t = segundos +(pos - aux)
-      hora = self.l.establecer_formato_hora(t)
-      self.mostrar_mensaje(_("Elapsed playback time"), hora)
-      if self.p.getState() == "Paused" and reproducir:
+      seconds, aux = self.b.getPlayingTime()
+      t = seconds +(pos - aux)
+      duration = self.b.getFormatedTime(t)
+      self.showMessage(_("Elapsed playback time"), duration)
+      if self.p.getState() == "Paused" and play:
         self.p.playPause()
     else:
-      self.mostrar_mensaje(_("Warning"), _("Tehre are currently no playing book"))
+      self.showMessage(_("Warning"), _("Tehre are currently no playing book"))
 
 
-  def mostrar_tiempo_total_callback(self, w, data):
+  def displayBookDurationCallback(self, w, data):
     """
-    Método para mostrar el tiempo total de reproducción del libro
+    Display current book duration in hh:mm:ss format
     """
     play = False
-    if self.comprobar_libro():
+    if self.bookOpened():
       if self.p.getState() == "Playing":
         play = True
         self.p.playPause()
-      tiempo = self.l.obtener_tiempo_total_audio()
-      hora = self.l.establecer_formato_hora(tiempo)
-      self.mostrar_mensaje(_("Total book's playback time"), hora)
-      if self.p.getState() == "Paused" and reproducir:
+      duration = self.b.getBookDuration()
+      duration_formated = self.b.getFormatedTime(duration)
+      self.showMessage(_("Total book's playback time"), duration_formated)
+      if self.p.getState() == "Paused" and play:
         self.p.playPause()
     else:
-      self.mostrar_mensaje(_("Warning"), _("Tehre are currently no playing book"))
+      self.showMessage(_("Warning"), _("Tehre are currently no playing book"))
 
 
-  def sinc_vista_audio(self):
+  def sincViewAudio(self):
     """
-    Método para sincronizar la vista del índice del libro con la reproducción del audio cuando el programa automáticamente avanza en la reproducción del libro o cuando el usuario pulsa una opción de navegación del menú
+    This function syncs the book view with the audio when playing forwards or user press a navigation option
     """
-    self.v.actualizar_vista(self.l.obtener_pos_indice())
-    fichero, pos_ini, pos_fin = self.l.obtener_pista()
-    self.r.reproducir(fichero, pos_ini, pos_fin)
+    self.v.updateView(self.b.getTocPosition())
+    file, pos_begin, pos_end = self.b.getAudioTrack()
+    self.p.play(file, pos_begin, pos_end)
 
 
-  def sinc_audio_vista(self, indice_pos):
+  def syncAudioView(self, toc_pos):
     """
-    Método para sincronizar el audio con la vista del índice cuando el usuario pulsa una tecla de desplazamiento o cuando hace click con el ratón
+    Synchronizes the audio with the view of the book toc when user press a navigation command or uses the mouse
     """
-    self.r.detener()
-    self.l.actualizar_pos_nodos_libro(indice_pos)
-    fichero, pos_ini, pos_fin = self.l.obtener_pista()
-    self.r.reproducir(fichero, pos_ini, pos_fin)
+    self.p.stop()
+    self.b.updateBooknodesPosition(toc_pos)
+    file, pos_begin, pos_end = self.b.getAudioTrack()
+    self.p.play(file, pos_begin, pos_end)
 
 
-  def detener_callback(self, w, data):
+  def stopCallback(self, w, data):
     """
-    Método para controlar la detención en la reproducción, comprobando si hay algun libro cargado
+    Stops the playback and checks if there is any opened book
     """
-    if self.comprobar_libro():
-      self.r.detener()
-      self.l.establecer_pos_lectura(0, 0, 0)
-      self.sinc_vista_audio()
+    if self.bookOpened():
+      self.p.stop()
+      self.b.setReadPosition(0, 0, 0)
+      self.syncVistaAudio()
       if self.p.getState() == "Playing":
         self.p.playPause()
     else:
-      self.mostrar_mensaje(_("Warning"), _("Tehre are currently no playing book"))
+      self.showMessage(_("Warning"), _("Tehre are currently no playing book"))
 
 
   def bookOpened(self):
@@ -275,351 +275,349 @@ class Controller:
     else:
       return True
 
-  def obtener_titulo(self):
-    return self.l.obtener_nombre()
+  def displayBookTitle(self):
+    return self.b.getBookTitle()
 
-  def control_estado_callback(self, w, data):
+  def switchStateCallback(self, w, data):
     """
-    Método para controlar el cambio de estado del reproductor
+    Switch between play and pause
     """
-    if self.comprobar_libro():
+    if self.bookOpened():
       self.p.playPause()
     else:
-      self.mostrar_mensaje(_("Warning"), _("There are currently no playing book"))
+      self.showMessage(_("Warning"), _("There are currently no playing book"))
 
 
-  def listar_capitulos_callback(self, w, data):
+  def displayChaptersCallback(self, w, data):
     """
-    Método para controlar la presentación de capítulos y mostrarlos
+    Displays the chapters list
     """
     play = False
-    if self.comprobar_libro():
+    if self.bookOpened():
       if self.p.getState() == "Playing":
         play = True
         self.p.playPause()
-      capitulos, pos_capitulos = self.l.obtener_capitulos()
-      if capitulos != []:
-        pos_capitulo = self.mostrar_combobox(_("Goo to chapter"), _("Select which chapter do you want to go"), capitulos)
-        if pos_capitulo != None:
-          self.r.detener()
-          self.l.actualizar_pos_nodos_libro(pos_capitulos[pos_capitulo])
-          self.sinc_vista_audio()
+      chapters, chapters_pos = self.b.getChapters()
+      if chapters != []:
+        chapter_pos = self.showCombobox(_("Goo to chapter"), _("Select which chapter do you want to go"), chapters)
+        if chapter_pos != None:
+          self.p.stop()
+          self.b.updateBooknodesPosition(chapters_pos[chapter_pos])
+          self.syncViewAudio()
         else:
-          self.mostrar_mensaje(_("Warning"), _("You have not selected any chapter"))
+          self.showMessage(_("Warning"), _("You have not selected any chapter"))
       else:
-        self.mostrar_mensaje(_("Error"), _("Don't exist any chapter in the book"))
-      if self.p.getState() == "Paused" and reproducir:
+        self.showMessage(_("Error"), _("Don't exist any chapter in the book"))
+      if self.p.getState() == "Paused" and play:
         self.p.playPause()
     else:
-      self.mostrar_mensaje(_("Warning"), _("There are currently no playing book"))
+      self.showMessage(_("Warning"), _("There are currently no playing book"))
 
 
-  def ir_cap_sig_callback(self, w, data):
+  def goToNextChapterCallback(self, w, data):
     """
-    Método para pasar al siguiente capítulo
+    Goto next chapter
     """
-    if self.comprobar_libro():
-      cambio = self.l.obtener_capitulo(1)
-      if cambio == 1:
-        self.r.detener()
-        self.l.obtener_pistas(self.l.obtener_nodo_actual())
-        self.sinc_vista_audio()
+    if self.bookOpened():
+      switch = self.b.nextOrPriorChapter(1)
+      if switch == 1:
+        self.p.stop()
+        self.b.getAudioTracks(self.b.getCurrentNode())
+        self.syncViewAudio()
     else:
-      self.m.mostrar_mensaje(_("Warning"), _("There are currently no playing book"))
+      self.showMessage(_("Warning"), _("There are currently no playing book"))
 
 
-  def ir_cap_ant_callback(self, w, data):
+  def goToPriorChapterCallback(self, w, data):
     """
-    Método para ir al capítulo anterior
+    Goto prior chapter
     """
-    if self.comprobar_libro():
-      cambio = self.l.obtener_capitulo(-1)
-      if cambio == 1:
-        self.r.detener()
-        self.l.obtener_pistas(self.l.obtener_nodo_actual())
-        self.sinc_vista_audio()
+    if self.bookOpened():
+      switch = self.b.nextOrPriorChapter(-1)
+      if switch == 1:
+        self.p.stop()
+        self.b.getAudioTracks(self.b.getCurrentNode())
+        self.syncViewAudio()
     else:
-      self.mostrar_mensaje(_("Warning"), _("There are currently no playing book"))
+      self.showMessage(_("Warning"), _("There are currently no playing book"))
 
 
-  def ir_pag_sig_callback(self, w, data):
+  def goToNextPageCallback(self, w, data):
     """
-    Método para controlar el paso a la siguiente página indicado por el usuario
+    Goto to the next page entered by user
     """
-    if self.comprobar_libro():
-      cambio = self.l.cambiar_pagina(1)
-      if cambio == 1:
-        self.r.detener()
-        self.l.obtener_pistas(self.l.obtener_nodo_actual())
-        self.sinc_vista_audio()
+    if self.bookOpened():
+      switch = self.b.nextOrPriorPage(1)
+      if switch == 1:
+        self.p.stop()
+        self.b.getAudioTracks(self.b.getCurrentNode())
+        self.syncViewAudio()
     else:
-      self.mostrar_mensaje(_("Warning"), _("There are currently no playing book"))
+      self.showMessage(_("Warning"), _("There are currently no playing book"))
 
 
-  def ir_pag_ant_callback(self, w, data):
+  def goToPriorPage(self, w, data):
     """
-    Método para controlar el cambio a la página anterior indicado por el usuario
+    Goto prior page
     """
-    if self.comprobar_libro():
-      cambio = self.l.cambiar_pagina(-1)
-      if cambio == 1:
-        self.r.detener()
-        self.l.obtener_pistas(self.l.obtener_nodo_actual())
-        self.sinc_vista_audio()
+    if self.bookOpened():
+      switch = self.b.nextOrPriorPage(-1)
+      if switch == 1:
+        self.p.stop()
+        self.b.getAudioTracks(self.b.getCurrentNode())
+        self.syncViewAudio()
     else:
-      self.mostrar_mensaje(_("Warning"), _("Tehre are currently no playing book"))
+      self.showMessage(_("Warning"), _("Tehre are currently no playing book"))
 
 
-  def ir_texto_ant_callback(self, w, data):
+  def goToPriorTextCallback(self, w, data):
     """
-    Método para controlar el cambio al bloque de texto anterior indicado por el usuario
+    Goto prior text
     """
-    if self.comprobar_libro():
-      cambio = self.l.obtener_texto(-1)
-      if cambio == 1:
-        self.r.detener()
-        self.l.obtener_pistas(self.l.obtener_nodo_actual())
-        self.sinc_vista_audio()
+    if self.bookOpened():
+      switch = self.b.nextOrPriorText(-1)
+      if switch == 1:
+        self.p.stop()
+        self.b.getAudioTracks(self.b.getCurrentNode())
+        self.syncViewAudio()
     else:
-      self.mostrar_mensaje(_("Warning"), _("Tehre are currently no playing book"))
+      self.showMessage(_("Warning"), _("Tehre are currently no playing book"))
 
 
-  def ir_texto_sig_callback(self, w, data):
+  def goToNextTextCallback(self, w, data):
     """
-    Método para controlar el paso al siguiente bloque de texto indicado por el usuario
+    Goto next text group
     """
-    if self.comprobar_libro():
-      cambio = self.l.obtener_texto(1)
-      if cambio == 1:
-        self.r.detener()
-        self.l.obtener_pistas(self.l.obtener_nodo_actual())
-        self.sinc_vista_audio()
+    if self.bookOpened():
+      switch = self.b.nextOrPriorText(1)
+      if switch == 1:
+        self.p.stop()
+        self.b.getAudioTracks(self.b.getCurrentNode())
+        self.syncViewAudio()
     else:
-      self.mostrar_mensaje(_("Warning"), _("Tehre are currently no playing book"))
+      self.showMessage(_("Warning"), _("Tehre are currently no playing book"))
 
 
-  def ir_a_pagina_callback(self, w, data):
+  def goToPageCallback(self, w, data):
     """
-    Método para controlar la búsqueda de una página indicada por el usuario
+    Goto a specified page user entered
     """
     play = False
-    if self.comprobar_libro():
+    if self.bookOpened():
       if self.p.getState() == "Playing":
         play = True
         self.p.playPause()
-      pagina = self.mostrar_entrada_texto(_("Go to page"), _("Enter the page which you want to go"), 10)
-      if pagina.isdigit():
-        cambio, pos = self.l.buscar_pagina(pagina)
-        if cambio == 1:
-          self.r.detener()
-          self.l.obtener_pistas(self.l.nodos_libro[pos])
-          self.sinc_vista_audio()
+      page = self.showEntryText(_("Go to page"), _("Enter the page which you want to go"), 1)
+      if page.isdigit():
+        switch, pos = self.b.goToPage(page)
+        if switch == 1:
+          self.p.stop()
+          self.b.getAudioTracks(self.b.booknodes[pos])
+          self.syncViewAudio()
         else:
-          self.mostrar_mensaje(_("Warning"), _("Page out of range"))
+          self.showMessage(_("Warning"), _("Page out of range"))
       else:
-        self.mostrar_mensaje(_("Error"), _("You have not entered a number"))
-      if self.p.getState() == "Paused" and reproducir:
+        self.showMessage(_("Error"), _("You have not entered a number"))
+      if self.p.getState() == "Paused" and play:
         self.p.playPause()
     else:
-      self.mostrar_mensaje(_("Warning"), _("Tehre are currently no playing book"))
+      self.showMessage(_("Warning"), _("Tehre are currently no playing book"))
 
 
-  def control_aumento_volumen_callback(self, w, data):
+  def upVolumeCallback(self, w, data):
     """
-    Método para controlar el aumento del volumen indicado por el usuario
+    Change up the volume
     """
-    if self.comprobar_libro():
-      self.r.cambiar_volumen(1)
+    if self.bookOpened():
+      self.p.changeVolume(1)
     else:
-      self.mostrar_mensaje(_("Warning"), _("There are currently no playing book"))
+      self.showMessage(_("Warning"), _("There are currently no playing book"))
 
 
-  def control_disminucion_volumen_callback(self, w, data):
+  def downVolumeCallback(self, w, data):
     """
-    Método para controlar la disminución  del volumen
+    Change down the volume
     """
-    if self.comprobar_libro():
-      self.r.cambiar_volumen(-1)
+    if self.bookOpened():
+      self.p.changeVolume(-1)
     else:
-      self.mostrar_mensaje(_("Warning"), _("There are currently no playing book"))
+      self.showMessage(_("Warning"), _("There are currently no playing book"))
 
 
-  def activar_desactivar_sonido_callback(self, w, data):
+  def toggleMuteCallback(self, w, data):
     """
-    Método para controlar la activación o desactivación del sonido
+    Toggles the mute
     """
-    if self.comprobar_libro():
-      self.r.silenciar()
+    if self.bookOpened():
+      self.p.mute()
     else:
-      self.mostrar_mensaje(_("Warning"), _("There are currently no playing book"))
+      self.showMessage(_("Warning"), _("There are currently no playing book"))
 
 
-  def establecer_marca_callback(self, w, data):
+  def createBookmarkCallback(self, w, data):
     """
-    Método para controlar la creación de una marca en el libro en reproducción
+    Creates a bookmark for the current playing book
     """
     play = False
-    if self.comprobar_libro():
+    if self.bookOpened():
       if self.p.getState() == "Playing":
         play = True
         self.p.playPause()
-      nombre_marca = self.mostrar_entrada_texto(_("Set bookmark"), _("Enter the bookmark name"), 50)
-      if nombre_marca != '':
-        marca = self.l.obtener_datos_para_marca()
-        marca.append(nombre_marca)
-        self.reg.crear_marca(marca)
+      bookmark_name = self.showEntryText(_("Set bookmark"), _("Enter the bookmark name"), 50)
+      if bookmark_name != '':
+        bookmark = self.b.getExactPosition()
+        bookmark.append(bookmark_name)
+        self.sets.saveBookmark(bookmark)
       else:
-        self.mostrar_mensaje(_("Error"), _("You have not entered a bookmark name"))
-      if self.p.getState() == "Paused" and reproducir:
+        self.showMessage(_("Error"), _("You have not entered a bookmark name"))
+      if self.p.getState() == "Paused" and play:
         self.p.playPause()
     else:
-      self.mostrar_mensaje(_("Warning"), _("There are currently no playing book"))
+      self.showMessage(_("Warning"), _("There are currently no playing book"))
 
 
-  def listar_marcas_callback(self, w, data):
+  def displayBookmarksCallback(self, w, data):
     """
-    Método para listar las marcas de un libro
+    Displays a list of bookmarks 
     """
     play = False
-    if self.comprobar_libro():
-      nombre_libro = self.l.obtener_nombre()
-      marcas = self.reg.obtener_marcas_libro_actual(nombre_libro)
+    if self.bookOpened():
+      book_title = self.b.getBookTitle()
+      bookmarks = self.sets.getBookmarksForCurrentBook(book_title)
       if self.p.getState() == "Playing":
         play = True
         self.p.playPause()
-      if marcas != []:
-        nombre_marcas = []
-        for i in range(len(marcas)):
-          nombre_marcas.append(marcas[i][0])
-        indice_marca = self.mostrar_combobox(_("Bookmark list"), _("Choose the bookmark which you want to go"), nombre_marcas)
-        if indice_marca != None:
-          self.r.detener()
-          self.l.establecer_pos_lectura(marcas[indice_marca][1], marcas[indice_marca][2], marcas[indice_marca][3])
-          self.sinc_vista_audio()
+      if bookmarks != []:
+        bookmarks_names = []
+        for i in range(len(bookmarks)):
+          bookmarks_names.append(bookmarks[i][0])
+        bookmark_index = self.showCombobox(_("Bookmark list"), _("Choose the bookmark which you want to go"), bookmarks_names)
+        if bookmark_index != None:
+          self.p.stop()
+          self.b.setReadPosition(bookmarks[bookmark_index][1], bookmarks[bookmark_index][2], bookmarks[bookmark_index][3])
+          self.syncViewAudio()
         else:
-          self.mostrar_mensaje(_("Warning"), _("You have not selected any bookmark"))
+          self.showMessage(_("Warning"), _("You have not selected any bookmark"))
       else:
-        self.mostrar_mensaje(_("Warning"), _("There are not bookmarks for this book"))
-      if self.p.getState() == "Paused" and reproducir:
+        self.showMessage(_("Warning"), _("There are not bookmarks for this book"))
+      if self.p.getState() == "Paused" and play:
         self.p.playPause()
     else:
-      self.mostrar_mensaje(_("Warning"), _("Tehre are currently no playing book"))
+      self.showMessage(_("Warning"), _("Tehre are currently no playing book"))
 
 
-  def borrado_de_marcas_callback(self, w, data):
+  def deleteBookmarkCallback(self, w, data):
     """
-    Método para controlar el borrado de una marca del libro en reproducción indicada por el usuario
+    Prompts for deletion of bookmark
     """
     play = False
-    if self.comprobar_libro():
-      nombre_libro = self.l.obtener_nombre()
-      marcas = self.reg.obtener_marcas_libro_actual(nombre_libro)
+    if self.bookOpened():
+      book_title = self.b.getBookTitle()
+      bookmarks = self.sets.getBookmarksForCurrentBook(book_title)
       if self.p.getState() == "Playing":
         play = True
         self.p.playPause()
-      if marcas != []:
-        nombre_marcas = []
-        for i in range(len(marcas)):
-          nombre_marcas.append(marcas[i][0])
-        indice_marca = self.mostrar_combobox(_("Bookmarks deletion"), _("Choose the bookmark which you want to delete"), nombre_marcas)
-        if indice_marca != None:
-          self.reg.borrar_marca(nombre_libro, indice_marca)
+      if bookmarks != []:
+        bookmarks_names = []
+        for i in range(len(bookmarks)):
+          bookmarks_names.append(bookmarks[i][0])
+        bookmark_index = self.showCombobox(_("Bookmarks deletion"), _("Choose the bookmark which you want to delete"), bookmarks_names)
+        if bookmark_index != None:
+          self.sets.deleteBookmark(book_title, bookmark_index)
         else:
-          self.mostrar_mensaje(_("Warning"), _("You have not selected any bookmark"))
+          self.showMessage(_("Warning"), _("You have not selected any bookmark"))
       else:
-        self.mostrar_mensaje(_("Warning"), _("Don't exist bookmarks for this book"))
-      if self.p.getState() == "Paused" and reproducir:
+        self.showMessage(_("Warning"), _("Don't exist bookmarks for this book"))
+      if self.p.getState() == "Paused" and play:
         self.p.playPause()
     else:
-      self.mostrar_mensaje(_("Warning"), _("Tehre are currently no playing book"))
+      self.showMessage(_("Warning"), _("Tehre are currently no playing book"))
 
 
-  def mostrar_mensaje(self, titulo, mensaje):
+  def showMessage(self, title, msg):
     """
-    Método para mostrar un mensaje
-    titulo: titulo del mensaje
-    mensaje: mensaje que se desea mostrar
+    Shows a message
+    msg: Message to present
+    title: Title of the message
     """
-    # Creacion de una ventana de dialogo
-    ventana_mensaje = gtk.Dialog(titulo, None, 0, (gtk.STOCK_OK, gtk.RESPONSE_OK))
+    msg_window = gtk.Dialog(title, None, 0, (gtk.STOCK_OK, gtk.RESPONSE_OK))
 
-    # creacion de una etiqueta con el mensaje de error
-    ventana_mensaje.etiqueta = gtk.Label(mensaje)
-    ventana_mensaje.vbox.pack_start(ventana_mensaje.etiqueta, True, True, 0)
-    ventana_mensaje.etiqueta.show()
-    response = ventana_mensaje.run()
-    ventana_mensaje.destroy()
+    msg_window_label = gtk.Label(msg)
+    msg_window.vbox.pack_start(msg_window_label, True, True, 0)
+    msg_window_label.show()
+    response = msg_window.run()
+    msg_window.destroy()
 
 
-  def mostrar_entrada_texto(self, titulo, texto_etiqueta, longitud):
+  def showEntryText(self, title, entry_label, size):
     """
-    Método para mostrar una entrada de texto y obtener el texto introducido por el usuario
-  titulo: titulo de la ventana de diálogo
-    texto_etiqueta: texto de la etiqueta
-    longitud: tamaño máximo de la entrada de texto
+    Shows an entry dialog and gets text entered
+  title: Title for the dialog
+    entry_label: Text label for the entry
+    size: Size for the entry
     """
-    dialogo = gtk.Dialog(titulo, None, 0, (gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
-    etiqueta = gtk.Label(texto_etiqueta)
-    etiqueta.show()
-    dialogo.vbox.pack_start(etiqueta)
-    entrada = gtk.Entry()
-    entrada.set_max_length(longitud)
-    entrada.select_region(0, len(entrada.get_text()))
-    entrada.show()
-    dialogo.vbox.pack_start(entrada, False)
-    response = dialogo.run()
+    dialog = gtk.Dialog(title, None, 0, (gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+    label = gtk.Label(entry_label)
+    label.show()
+    dialog.vbox.pack_start(label)
+    entry = gtk.Entry()
+    entry.set_max_length(size)
+    entry.select_region(0, len(entry.get_text()))
+    entry.show()
+    dialog.vbox.pack_start(entry, False)
+    response = dialog.run()
     if response == gtk.RESPONSE_OK:
-      texto = entrada.get_text()
+      text = entry.get_text()
     else:
-      texto = ''
-    dialogo.destroy()
-    return texto
+      text = ''
+    dialog.destroy()
+    return text
 
 
-  def mostrar_combobox(self, titulo, texto_etiqueta, lista):
+  def showCombobox(self, title, label_text, choices):
     """
-    Método para mostrar un combobox por pantalla y obtener la opción elegida
+    Shows a combobox and gets selected choice
     """
-    dialogo = gtk.Dialog(titulo, None, 0, (gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
-    etiqueta = gtk.Label(texto_etiqueta)
-    etiqueta.show()
-    dialogo.vbox.pack_start(etiqueta)
+    dialog = gtk.Dialog(title, None, 0, (gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+    label = gtk.Label(label_text)
+    label.show()
+    dialog.vbox.pack_start(label)
     combobox = gtk.combo_box_new_text()
-    for x in lista:
+    for x in choices:
       combobox.append_text(x)
     combobox.set_active(0)
     combobox.show()
-    dialogo.vbox.pack_start(combobox, False)
-    response = dialogo.run()
+    dialog.vbox.pack_start(combobox, False)
+    response = dialog.run()
     if response == gtk.RESPONSE_OK:
-      elemento_activo = combobox.get_active()
+      selected_choice = combobox.get_active()
     else:
-      elemento_activo = None
-    dialogo.destroy()
-    return elemento_activo
+      selected_choice = None
+    dialog.destroy()
+    return selected_choice
 
 
-  def mostrar_ayuda_callback(self, w, data):
+  def displayHelpCallback(self, w, data):
     """
-    Método para mostrar el fichero de ayuda del DBR
+    Displays help screen
     """
     play = False
-    if self.comprobar_libro():
+    if self.bookOpened():
       if self.p.getState() == "Playing":
         play = True
         self.p.playPause()
     if os.path.exists("docs/ayuda.html"):
       os.system("firefox docs/ayuda.html")
     else:
-      self.mostrar_mensaje(_("Warning!"), _("The help file can not be found"))
-    if self.comprobar_libro():
-      if self.p.getState() == "Paused" and reproducir:
+      self.showMessage(_("Warning!"), _("The help file can not be found"))
+    if self.bookOpened():
+      if self.p.getState() == "Paused" and play:
         self.p.playPause()
 
 
   def close_about_dialog_callback(self, w, data):
 
-    if self.comprobar_libro():
+    if self.bookOpened():
       if self.p.getState() == "Paused":
         self.p.playPause()
 
@@ -642,7 +640,7 @@ class Controller:
 
     ADlg=gtk.AboutDialog()
 
-    if self.comprobar_libro():
+    if self.bookOpened():
       if self.p.getState() == "Playing":
         play = True
         self.p.playPause()
@@ -659,19 +657,19 @@ class Controller:
     ADlg.connect("response", self.close_about_dialog_callback)
     ADlg.show()
 
-  def mostrar_licencia_callback(self, w, data):
+  def displayLicenseCallback(self, w, data):
     """
-    Método para mostrar la licencia de uso del DBR
+    Display license notice
     """
     play = False
-    if self.comprobar_libro():
+    if self.bookOpened():
       if self.p.getState() == "Playing":
         play = True
         self.p.playPause()
     if os.path.exists("docs/licencia.html"):
       os.system("firefox docs/licencia.html")
     else:
-      self.mostrar_mensaje(_("Warning!"), _("The help file can not be found"))
-    if self.comprobar_libro():
-      if self.p.getState() == "Paused" and reproducir:
+      self.showMessage(_("Warning!"), _("The help file can not be found"))
+    if self.bookOpened():
+      if self.p.getState() == "Paused" and play:
         self.p.playPause()

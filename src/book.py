@@ -306,7 +306,7 @@ class Book:
     return realized, i
 
 
-  def getText(self, pos):
+  def nextOrPriorText(self, pos):
     """
     Set to next or prior chunk of text
     pos: Wether to search forward or backward
