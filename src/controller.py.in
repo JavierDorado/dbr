@@ -159,58 +159,58 @@ class Controller:
       configuration.append(volume)
       self.sets.writeConfiguration(configuration)
 
-##
-  def mostrar_inf_libro_callback(self, w, data):
+
+  def displayBookInfoCallback(self, w, data):
     """
-    Método para mostrar información general del libro
+    Displays general book information
     """
-    reproducir = False
-    if self.comprobar_libro():
-      if self.r.obtener_estado() == "Reproduciendo":
-        reproducir = True
-        self.r.reproducir_pausar()
-      info = self.l.obtener_inf_libro()
-      self.mostrar_mensaje(_("Book information"), info)
-      if self.r.obtener_estado() == "Pausado" and reproducir:
-        self.r.reproducir_pausar()
+    play = False
+    if self.bookOpened():
+      if self.p.getState() == "Playing":
+        play = True
+        self.p.playPause()
+      info = self.b.getBookInfo()
+      self.showMessage(_("Book information"), info)
+      if self.p.getState() == "Paused" and play:
+        self.p.playPause()
     else:
-      self.mostrar_mensaje(_("Warning"), _("There are currently nno playing book"))
+      self.showMessage(_("Warning"), _("There are currently nno playing book"))
 
 
-  def mostrar_inf_traduccion_callback(self, w, data):
+  def displayTranslationInfoCallback(self, w, data):
     """
-    Método para mostrar información de la traducción del libro
+    Displays book translation information
     """
-    reproducir = False
-    if self.comprobar_libro():
-      if self.r.obtener_estado() == "Reproduciendo":
-        reproducir = True
-        self.r.reproducir_pausar()
-      info = self.l.obtener_inf_traduccion()
-      self.mostrar_mensaje(_("Book translation information"), info)
-      if self.r.obtener_estado() == "Pausado" and reproducir:
-        self.r.reproducir_pausar()
+    play = False
+    if self.bookOpened():
+      if self.p.getState() == "Playing":
+        play = True
+        self.p.playPause()
+      info = self.b.getBookTranslationInfo()
+      self.showMessage(_("Book translation information"), info)
+      if self.p.getState() == "Paused" and play:
+        self.p.playPause()
     else:
-      self.mostrar_mensaje(_("Warning"), _("There are currently no playing book"))
+      self.showMessage(_("Warning"), _("There are currently no playing book"))
 
 
-  def mostrar_pos_actual_callback(self, w, data):
+  def displayPlayingTimeCallback(self, w, data):
     """
-    Método para mostrar laposición de lectura actual con el formato "hh:mm:ss"
+    Displays playing time in hh:mm:ss format
     """
-    reproducir = False
-    if self.comprobar_libro():
-      if self.r.obtener_estado() == "Reproduciendo":
-        reproducir = True
-        self.r.reproducir_pausar()
-      pos = self.r.obtener_ins_actual()
+    play = False
+    if self.bookOpened():
+      if self.p.getState() == "Playing":
+        play = True
+        self.p.playPause()
+      pos = self.p.obtener_ins_actual()
       pos = pos / 1000000000
       segundos, aux = self.l.obtener_pos_actual_audio()
       t = segundos +(pos - aux)
       hora = self.l.establecer_formato_hora(t)
       self.mostrar_mensaje(_("Elapsed playback time"), hora)
-      if self.r.obtener_estado() == "Pausado" and reproducir:
-        self.r.reproducir_pausar()
+      if self.p.getState() == "Paused" and reproducir:
+        self.p.playPause()
     else:
       self.mostrar_mensaje(_("Warning"), _("Tehre are currently no playing book"))
 
@@ -219,16 +219,16 @@ class Controller:
     """
     Método para mostrar el tiempo total de reproducción del libro
     """
-    reproducir = False
+    play = False
     if self.comprobar_libro():
-      if self.r.obtener_estado() == "Reproduciendo":
-        reproducir = True
-        self.r.reproducir_pausar()
+      if self.p.getState() == "Playing":
+        play = True
+        self.p.playPause()
       tiempo = self.l.obtener_tiempo_total_audio()
       hora = self.l.establecer_formato_hora(tiempo)
       self.mostrar_mensaje(_("Total book's playback time"), hora)
-      if self.r.obtener_estado() == "Pausado" and reproducir:
-        self.r.reproducir_pausar()
+      if self.p.getState() == "Paused" and reproducir:
+        self.p.playPause()
     else:
       self.mostrar_mensaje(_("Warning"), _("Tehre are currently no playing book"))
 
@@ -260,8 +260,8 @@ class Controller:
       self.r.detener()
       self.l.establecer_pos_lectura(0, 0, 0)
       self.sinc_vista_audio()
-      if self.r.obtener_estado() == "Reproduciendo":
-        self.r.reproducir_pausar()
+      if self.p.getState() == "Playing":
+        self.p.playPause()
     else:
       self.mostrar_mensaje(_("Warning"), _("Tehre are currently no playing book"))
 
@@ -283,7 +283,7 @@ class Controller:
     Método para controlar el cambio de estado del reproductor
     """
     if self.comprobar_libro():
-      self.r.reproducir_pausar()
+      self.p.playPause()
     else:
       self.mostrar_mensaje(_("Warning"), _("There are currently no playing book"))
 
@@ -292,11 +292,11 @@ class Controller:
     """
     Método para controlar la presentación de capítulos y mostrarlos
     """
-    reproducir = False
+    play = False
     if self.comprobar_libro():
-      if self.r.obtener_estado() == "Reproduciendo":
-        reproducir = True
-        self.r.reproducir_pausar()
+      if self.p.getState() == "Playing":
+        play = True
+        self.p.playPause()
       capitulos, pos_capitulos = self.l.obtener_capitulos()
       if capitulos != []:
         pos_capitulo = self.mostrar_combobox(_("Goo to chapter"), _("Select which chapter do you want to go"), capitulos)
@@ -308,8 +308,8 @@ class Controller:
           self.mostrar_mensaje(_("Warning"), _("You have not selected any chapter"))
       else:
         self.mostrar_mensaje(_("Error"), _("Don't exist any chapter in the book"))
-      if self.r.obtener_estado() == "Pausado" and reproducir:
-        self.r.reproducir_pausar()
+      if self.p.getState() == "Paused" and reproducir:
+        self.p.playPause()
     else:
       self.mostrar_mensaje(_("Warning"), _("There are currently no playing book"))
 
@@ -402,11 +402,11 @@ class Controller:
     """
     Método para controlar la búsqueda de una página indicada por el usuario
     """
-    reproducir = False
+    play = False
     if self.comprobar_libro():
-      if self.r.obtener_estado() == "Reproduciendo":
-        reproducir = True
-        self.r.reproducir_pausar()
+      if self.p.getState() == "Playing":
+        play = True
+        self.p.playPause()
       pagina = self.mostrar_entrada_texto(_("Go to page"), _("Enter the page which you want to go"), 10)
       if pagina.isdigit():
         cambio, pos = self.l.buscar_pagina(pagina)
@@ -418,8 +418,8 @@ class Controller:
           self.mostrar_mensaje(_("Warning"), _("Page out of range"))
       else:
         self.mostrar_mensaje(_("Error"), _("You have not entered a number"))
-      if self.r.obtener_estado() == "Pausado" and reproducir:
-        self.r.reproducir_pausar()
+      if self.p.getState() == "Paused" and reproducir:
+        self.p.playPause()
     else:
       self.mostrar_mensaje(_("Warning"), _("Tehre are currently no playing book"))
 
@@ -458,11 +458,11 @@ class Controller:
     """
     Método para controlar la creación de una marca en el libro en reproducción
     """
-    reproducir = False
+    play = False
     if self.comprobar_libro():
-      if self.r.obtener_estado() == "Reproduciendo":
-        reproducir = True
-        self.r.reproducir_pausar()
+      if self.p.getState() == "Playing":
+        play = True
+        self.p.playPause()
       nombre_marca = self.mostrar_entrada_texto(_("Set bookmark"), _("Enter the bookmark name"), 50)
       if nombre_marca != '':
         marca = self.l.obtener_datos_para_marca()
@@ -470,8 +470,8 @@ class Controller:
         self.reg.crear_marca(marca)
       else:
         self.mostrar_mensaje(_("Error"), _("You have not entered a bookmark name"))
-      if self.r.obtener_estado() == "Pausado" and reproducir:
-        self.r.reproducir_pausar()
+      if self.p.getState() == "Paused" and reproducir:
+        self.p.playPause()
     else:
       self.mostrar_mensaje(_("Warning"), _("There are currently no playing book"))
 
@@ -480,13 +480,13 @@ class Controller:
     """
     Método para listar las marcas de un libro
     """
-    reproducir = False
+    play = False
     if self.comprobar_libro():
       nombre_libro = self.l.obtener_nombre()
       marcas = self.reg.obtener_marcas_libro_actual(nombre_libro)
-      if self.r.obtener_estado() == "Reproduciendo":
-        reproducir = True
-        self.r.reproducir_pausar()
+      if self.p.getState() == "Playing":
+        play = True
+        self.p.playPause()
       if marcas != []:
         nombre_marcas = []
         for i in range(len(marcas)):
@@ -500,8 +500,8 @@ class Controller:
           self.mostrar_mensaje(_("Warning"), _("You have not selected any bookmark"))
       else:
         self.mostrar_mensaje(_("Warning"), _("There are not bookmarks for this book"))
-      if self.r.obtener_estado() == "Pausado" and reproducir:
-        self.r.reproducir_pausar()
+      if self.p.getState() == "Paused" and reproducir:
+        self.p.playPause()
     else:
       self.mostrar_mensaje(_("Warning"), _("Tehre are currently no playing book"))
 
@@ -510,13 +510,13 @@ class Controller:
     """
     Método para controlar el borrado de una marca del libro en reproducción indicada por el usuario
     """
-    reproducir = False
+    play = False
     if self.comprobar_libro():
       nombre_libro = self.l.obtener_nombre()
       marcas = self.reg.obtener_marcas_libro_actual(nombre_libro)
-      if self.r.obtener_estado() == "Reproduciendo":
-        reproducir = True
-        self.r.reproducir_pausar()
+      if self.p.getState() == "Playing":
+        play = True
+        self.p.playPause()
       if marcas != []:
         nombre_marcas = []
         for i in range(len(marcas)):
@@ -528,8 +528,8 @@ class Controller:
           self.mostrar_mensaje(_("Warning"), _("You have not selected any bookmark"))
       else:
         self.mostrar_mensaje(_("Warning"), _("Don't exist bookmarks for this book"))
-      if self.r.obtener_estado() == "Pausado" and reproducir:
-        self.r.reproducir_pausar()
+      if self.p.getState() == "Paused" and reproducir:
+        self.p.playPause()
     else:
       self.mostrar_mensaje(_("Warning"), _("Tehre are currently no playing book"))
 
@@ -603,25 +603,25 @@ class Controller:
     """
     Método para mostrar el fichero de ayuda del DBR
     """
-    reproducir = False
+    play = False
     if self.comprobar_libro():
-      if self.r.obtener_estado() == "Reproduciendo":
-        reproducir = True
-        self.r.reproducir_pausar()
+      if self.p.getState() == "Playing":
+        play = True
+        self.p.playPause()
     if os.path.exists("docs/ayuda.html"):
       os.system("firefox docs/ayuda.html")
     else:
       self.mostrar_mensaje(_("Warning!"), _("The help file can not be found"))
     if self.comprobar_libro():
-      if self.r.obtener_estado() == "Pausado" and reproducir:
-        self.r.reproducir_pausar()
+      if self.p.getState() == "Paused" and reproducir:
+        self.p.playPause()
 
 
   def close_about_dialog_callback(self, w, data):
 
     if self.comprobar_libro():
-      if self.r.obtener_estado() == "Pausado":
-        self.r.reproducir_pausar()
+      if self.p.getState() == "Paused":
+        self.p.playPause()
 
     if data==gtk.RESPONSE_CANCEL:
       w.destroy()
@@ -630,7 +630,7 @@ class Controller:
     """
     This method is used for displaying "About DBR" notice
     """
-    reproducir = False
+    play = False
     program_name="DBR"
     authors=['Rafael Cantos Villanueva', \
             'Francisco Javier Dorado Martínez']
@@ -643,9 +643,9 @@ class Controller:
     ADlg=gtk.AboutDialog()
 
     if self.comprobar_libro():
-      if self.r.obtener_estado() == "Reproduciendo":
-        reproducir = True
-        self.r.reproducir_pausar()
+      if self.p.getState() == "Playing":
+        play = True
+        self.p.playPause()
 
 
     ADlg.set_program_name(program_name)
@@ -663,15 +663,15 @@ class Controller:
     """
     Método para mostrar la licencia de uso del DBR
     """
-    reproducir = False
+    play = False
     if self.comprobar_libro():
-      if self.r.obtener_estado() == "Reproduciendo":
-        reproducir = True
-        self.r.reproducir_pausar()
+      if self.p.getState() == "Playing":
+        play = True
+        self.p.playPause()
     if os.path.exists("docs/licencia.html"):
       os.system("firefox docs/licencia.html")
     else:
       self.mostrar_mensaje(_("Warning!"), _("The help file can not be found"))
     if self.comprobar_libro():
-      if self.r.obtener_estado() == "Pausado" and reproducir:
-        self.r.reproducir_pausar()
+      if self.p.getState() == "Paused" and reproducir:
+        self.p.playPause()
