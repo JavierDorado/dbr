@@ -157,7 +157,7 @@ class Controller:
       configuration = self.b.getExactPosition()
       volume = self.p.getVolume()
       configuration.append(volume)
-      self.sets.writeConfiguration(configuration)
+      self.sets.saveConfiguration(configuration)
 
 
   def displayBookInfoCallback(self, w, data):
@@ -467,7 +467,7 @@ class Controller:
       if bookmark_name != '':
         bookmark = self.b.getExactPosition()
         bookmark.append(bookmark_name)
-        self.sets.saveBookmark(bookmark)
+        self.sets.createBookmark(bookmark)
       else:
         self.showMessage(_("Error"), _("You have not entered a bookmark name"))
       if self.p.getState() == "Paused" and play:
@@ -483,7 +483,7 @@ class Controller:
     play = False
     if self.bookOpened():
       book_title = self.b.getBookTitle()
-      bookmarks = self.sets.getBookmarksForCurrentBook(book_title)
+      bookmarks = self.sets.getBookmarksForBook(book_title)
       if self.p.getState() == "Playing":
         play = True
         self.p.playPause()
@@ -513,7 +513,7 @@ class Controller:
     play = False
     if self.bookOpened():
       book_title = self.b.getBookTitle()
-      bookmarks = self.sets.getBookmarksForCurrentBook(book_title)
+      bookmarks = self.sets.getBookmarksForBook(book_title)
       if self.p.getState() == "Playing":
         play = True
         self.p.playPause()

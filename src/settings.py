@@ -28,153 +28,153 @@ class Settings:
 
   def __init__(self):
     """
-    Método que obtiene la configuración del DBR
+    This class gets configuration for application
     """
     home = os.path.expanduser('~')
-    self.fichero_configuracion = home + "/" + ".dbr"
-    if os.path.exists(self.fichero_configuracion):
-      f = open(self.fichero_configuracion, "r")
-      self.registro = pickle.load(f)
+    self.config_file = home + "/" + ".dbr"
+ #fjdm: we need to create a new configuration system.
+    if os.path.exists(self.config_file):
+      f = open(self.config_file, "r")
+      self.settings = pickle.load(f)
       f.close()
     else:
-      self.crear_fichero_configuracion()
+      self.createConfigFile()
 
 
-  def escribir_configuracion(self, informacion):
+  def saveConfiguration(self, informacion):
     """
-    Método para escribir en la configuración  los datos de configuración y la última posición de lectura del libro último en reproducción
-    informacion: datos de la configuración y el último libro reproducido
+    Saves configuration and latest book reading position to the config file
+    info: Configuration and book position for the latest read book
     """
-    self.registro[0] = informacion
-    f = open(self.fichero_configuracion, "w")
-    pickle.dump(self.registro, f)
+    self.settings[0] = info
+    f = open(self.config_file, "w")
+    pickle.dump(self.settings, f)
     f.close()
 
 
-  def obtener_configuracion(self):
+  def getConfiguration(self):
     """
-    Método para obtener la configuración del DBR y el último libroleído y su posición de lectura
+    Gets configuration and latest read book
     """
-    return self.registro[0]
+    return self.settings[0]
 
 
-  def crear_fichero_configuracion(self):
+  def createConfigFile(self):
     """
-    Método para crear el fichero de configuración del DBR si no existe
+    Creates DBR configuration if not exists
     """
-    self.registro = [0]
-    configuracion = [None, None, [0, 0, 0], 1]
-    self.registro[0] = configuracion
-    f = open(self.fichero_configuracion, "w")
-    pickle.dump(self.registro, f)
+    self.settings = [0]
+    config = [None, None, [0, 0, 0], 1]
+    self.settings[0] = config
+    f = open(self.config_file, "w")
+    pickle.dump(self.settings, f)
     f.close()
 
 
-  def crear_marca(self, marca):
+  def createBookmark(self, bookmark):
     """
-    Método para crear o actualizar una marca de un libro y almacenarla en el fichero de configuración
-    marca: datos necesarios para crear la marca
+    Creates or update a bookmark and saves it in the config file
+    bookmark: Needed information for the bookmark
     """
     aux = [0]
-    # Comprobamos si hay algun libro almacenado
-    if len(self.registro) > 1:
-      # Comprobamos si el libro al que vamos a poner la marca está almacenado ya
+    # First we look if book was previously saved
+    if len(self.settings) > 1:
       i = 0
-      encontrado = 0
-      while (i < (len(self.registro)-1)) and encontrado == 0:
+      found = 0
+      while (i < (len(self.settings)-1)) and found == 0:
         i = i + 1
-        if self.registro[i][0] == marca[0]:
-          encontrado = 1
-      if encontrado == 1:
-        # El libro está almacenado
-        # Comprobamos si el libro tiene una marca con el nombre de la nueva marca
+        if self.settings[i][0] == bookmark[0]:
+          found = 1
+      if found == 1:
+        # The book is saved
+        # Look for the bookmark if was previously saved
         j = 1
-        terminado = 0
-        while (j < (len(self.registro[i])-1)) and (terminado == 0):
+        finish = 0
+        while (j < (len(self.settings[i])-1)) and (finish == 0):
           j = j + 1
-          if self.registro[i][j][0] == marca[5]:
-            terminado = 1
-        if terminado == 1:
-          # Hay una marca con ese nombre
-          self.registro[i][j][1:4] = marca[2:5]
+          if self.settings[i][j][0] == bookmark[5]:
+            finish = 1
+        if finish == 1:
+          # Bookmark exists
+          self.settings[i][j][1:4] = bookmark[2:5]
         else:
-          # No hay una marca con ese nombre
-          aux[0] = marca[5]
-          aux = aux + marca[2:5]
-          self.registro[i].append(aux)
+          # Bookmark doesn't exist
+          aux[0] = bookmark[5]
+          aux = aux + bookmark[2:5]
+          self.settings[i].append(aux)
       else:
-        # No hay ningun libro almacenado con ese nombre
-        self.registro.append(marca[0:2])
-        aux[0] = marca[5]
-        aux = aux + marca[2:5]
-        self.registro[i+1].append(aux)
+        # The book doesn't exist
+        self.settings.append(bookmark[0:2])
+        aux[0] = bookmark[5]
+        aux = aux + bookmark[2:5]
+        self.settings[i+1].append(aux)
     else:
-      # No hay ningun libro almacenado
-      self.registro.append(marca[0:2])
-      aux[0] = marca[5]
-      aux = aux + marca[2:5]
-      pos = len(self.registro) - 1
-      self.registro[pos].append(aux)
-    print self.registro
-    f = open(self.fichero_configuracion, "w")
-    pickle.dump(self.registro, f)
+      # There are not any book saved
+      self.settings.append(bookmark[0:2])
+      aux[0] = bookmark[5]
+      aux = aux + bookmark[2:5]
+      pos = len(self.settings) - 1
+      self.settings[pos].append(aux)
+    print self.settings #dbg
+    f = open(self.config_file, "w")
+    pickle.dump(self.settings, f)
     f.close()
 
 
-  def obtener_marcas_libro_actual(self, nombre_libro):
+  def getBookmarksForBook(self, book_title):
     """
-    Método para obtener las marcas del libro actualmente en reproducción
+    Returns bookmarks for a specified book
     """
-    # Comprobamos si hay algun libro con marcas
-    if len(self.registro) > 1:
+    # Look if there is any book with bookmarks
+    if len(self.settings) > 1:
       i = 0
-      encontrado = 0
-      while (i < (len(self.registro)-1)) and encontrado == 0:
+      found = 0
+      while (i < (len(self.settings)-1)) and found == 0:
         i = i + 1
-        if self.registro[i][0] == nombre_libro:
-          encontrado = 1
-      if encontrado == 1:
-        # Obtenemos las marcas disponibles
-        marcas = []
+        if self.settings[i][0] == book_title:
+          found = 1
+      if found == 1:
+        # Get available bookmarks
+        bookmarks = []
         j = 2
-        while (j < len(self.registro[i])):
-          marcas.append(self.registro[i][j])
+        while (j < len(self.settings[i])):
+          bookmarks.append(self.settings[i][j])
           j = j + 1
       else:
-        marcas = []
+        bookmarks = []
     else:
-      marcas = []
-    return marcas
+      bookmarks = []
+    return bookmarks
 
 
-  def borrar_marca(self, nombre_libro, pos_marca):
+  def deleteBookmark(self, book_title, bookmark_pos):
     """
-    Método para borrar una marca en el libro actualmente en reproducción
+    Deletes a bookmark for a specified book
     """
     i = 0
-    encontrado = 0
-    while (i < len(self.registro)) and (encontrado == 0):
+    found = 0
+    while (i < len(self.settings)) and (found == 0):
       i = i + 1
-      if nombre_libro == self.registro[i][0]:
-        encontrado = 1
-    if len(self.registro[i]) == 3:
-      self.registro.pop(i)
+      if book_title == self.settings[i][0]:
+        found = 1
+    if len(self.settings[i]) == 3:
+      self.settings.pop(i)
     else:
-      self.registro[i].pop(pos_marca+2)
-    f = open(self.fichero_configuracion, "w")
-    pickle.dump(self.registro, f)
+      self.settings[i].pop(bookmark_pos+2)
+    f = open(self.config_file, "w")
+    pickle.dump(self.settings, f)
     f.close()
 
 
-  def buscar_libros(self):
+  def getBooks(self):
     """
-    Método que busca los libros almacenados en el fichero de configuración
+    Returns the books saved in the config file
     """
-    if len(self.registro) > 1:
-      libros = []
+    if len(self.settings) > 1:
+      books = []
       i = 0
-      while (i < (len(self.registro)-1)):
+      while (i < (len(self.settings)-1)):
         i = i + 1
-        if os.path.exists(self.registro[i][1]):
-          libros.append(self.registro[i][0:2])
-    return libros
+        if os.path.exists(self.settings[i][1]):
+          books.append(self.settings[i][0:2])
+    return books
