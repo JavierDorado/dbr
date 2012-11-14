@@ -18,7 +18,7 @@
 
 import xml.dom.minidom as MD
 
-	from dbr_i18n import _          #For i18n support
+from dbr_i18n import _          #For i18n support
 
 class Book:
   """
@@ -139,7 +139,7 @@ class Book:
     if size >= 1:
       list, list1 = self.getSubTree(nodes, list, list1)
       self.toc = list
-      self.booknodes = listado
+      self.booknodes = list1
 
 
   def getChapters(self):
@@ -199,27 +199,27 @@ class Book:
     """
     found = 0
     realized = 0
-    new_pos_booknodes = self.pos_booknodes
-    while (found == 0) and (new_booknodes_pos > 0) and (new_pos_booknodes < len(self.booknodes)):
-      new_pos_booknodes = new_pos_booknodes + pos
-      if new_pos_booknodes < len(self.booknodes):
-        if self.booknodes[new_pos_booknodes].hasAttribute('class'):
-          classval = self.booknodes[new_pos_booknodes].attributes['class'].value
+    new_booknodes_pos = self.pos_booknodes
+    while (found == 0) and (new_booknodes_pos > 0) and (new_booknodes_pos < len(self.booknodes)):
+      new_booknodes_pos = new_booknodes_pos + pos
+      if new_booknodes_pos < len(self.booknodes):
+        if self.booknodes[new_booknodes_pos].hasAttribute('class'):
+          classval = self.booknodes[new_booknodes_pos].attributes['class'].value
           if classval == 'page-normal':
             found = 1
             realized = 1
     if found == 1:
-      self.updateTocPosition(new_pos_booknodes)
+      self.updateTocPosition(new_booknodes_pos)
     return realized
 
 
-  def updateTocPosition(self, new_pos_booknodes):
+  def updateTocPosition(self, new_booknodes_pos):
     """
     Updates toc position related to booknodes position
-    new_pos_booknodes: New position in the booknodes list
+    new_booknodes_pos: New position in the booknodes list
     """
     found = 0
-    i = new_pos_booknodes
+    i = new_booknodes_pos
     while (found == 0) and (i > 0):
       i = i - 1
       if self.booknodes[i].hasAttribute('class'):
@@ -233,7 +233,7 @@ class Book:
             id_toc = self.toc[j].attributes['id'].value
             if id_toc == id_booknodes:
               self.next_toc_pos = self.toc_pos = j
-              self.next_pos_booknodes = self.pos_booknodes = new_pos_booknodes
+              self.next_booknodes_pos = self.pos_booknodes = new_booknodes_pos
               self.audio_pos = 0
               finished = 1
             if j > 0:
@@ -247,14 +247,14 @@ class Book:
           id_toc = self.toc[j].attributes['id'].value
           if id_toc == id_booknodes:
             self.next_toc_pos = self.toc_pos = j
-            self.next_pos_booknodes = self.pos_booknodes = new_pos_booknodes
+            self.next_booknodes_pos = self.pos_booknodes = new_booknodes_pos
             self.audio_pos = 0
             finished = 1
           if j > 0:
             j = j - 1
 
 
-  def UpdateBooknodesPosition(self, new_toc_pos):
+  def updateBooknodesPosition(self, new_toc_pos):
     """
     Updates booknodes position related to toc position
     new_toc_pos: New position in toc
@@ -266,7 +266,7 @@ class Book:
       id_booknodes = self.booknodes[i].attributes['id'].value
       if id_toc == id_booknodes:
         self.next_toc_pos = self.toc_pos = new_toc_pos
-        self.next_pos_booknodes = self.pos_booknodes = i
+        self.next_booknodes_pos = self.pos_booknodes = i
         self.audio_pos = 0
         self.getAudioTracks(self.booknodes[self.pos_booknodes])
         found = 1
@@ -277,7 +277,7 @@ class Book:
     Sets current reading position in booknodes, toc and audio
     """
     self.toc_pos = self.next_toc_pos = toc_pos
-    self.pos_booknodes = self.next_pos_booknodes = pos_booknodes
+    self.pos_booknodes = self.next_booknodes_pos = pos_booknodes
     self.audio_pos = audio_pos
     self.getAudioTracks(self.booknodes[self.pos_booknodes])
 
@@ -313,17 +313,17 @@ class Book:
     """
     found = 0
     realized = 0
-    new_pos_booknodes = self.pos_booknodes
-    while (found == 0) and (new_pos_booknodes > 0) and (new_pos_booknodes < len(self.booknodes)):
-      new_pos_booknodes = new_pos_booknodes + pos
-      if new_pos_booknodes < len(self.booknodes):
-        if self.booknodes[new_pos_booknodes].hasAttribute('class'):
-          classval = self.booknodes[new_pos_booknodes].attributes['class'].value
+    new_booknodes_pos = self.pos_booknodes
+    while (found == 0) and (new_booknodes_pos > 0) and (new_booknodes_pos < len(self.booknodes)):
+      new_booknodes_pos = new_booknodes_pos + pos
+      if new_booknodes_pos < len(self.booknodes):
+        if self.booknodes[new_booknodes_pos].hasAttribute('class'):
+          classval = self.booknodes[new_booknodes_pos].attributes['class'].value
           if classval == 'group':
             found = 1
             realized = 1
     if found == 1:
-      self.updateTocPosition(new_pos_booknodes)
+      self.updateTocPosition(new_booknodes_pos)
     return realized
 
 
@@ -331,8 +331,8 @@ class Book:
     """
     Gets an audio track and its begin and end playing time
     """
-    if self.next_pos_booknodes == (self.pos_booknodes + 1):
-      self.pos_booknodes = self.next_pos_booknodes
+    if self.next_booknodes_pos == (self.pos_booknodes + 1):
+      self.pos_booknodes = self.next_booknodes_pos
     if self.next_toc_pos == (self.toc_pos + 1):
       self.toc_pos = self.next_toc_pos
     if self.audio_pos == -1:
@@ -350,12 +350,12 @@ class Book:
         nod_next_id = self.booknodes[self.pos_booknodes+1].attributes['id'].value
         if (ind_id == nod_id) or (ind_next_id == nod_next_id):
           self.next_toc_pos = self.next_toc_pos + 1
-        self.next_pos_booknodes = self.next_pos_booknodes + 1
+        self.next_booknodes_pos = self.next_booknodes_pos + 1
         self.audio_pos = 0
-        self.getAudioTracks(self.booknodes[self.next_pos_booknodes])
+        self.getAudioTracks(self.booknodes[self.next_booknodes_pos])
       else:
         self.next_toc_pos = self.toc_pos = 0
-        self.next_pos_booknodes = self.pos_booknodes = 0
+        self.next_booknodes_pos = self.pos_booknodes = 0
         self.audio_pos = 0
     return file, pos_begin, pos_end
 

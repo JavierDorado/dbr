@@ -5,7 +5,7 @@ import pygtk
 pygtk.require('2.0')
 import gtk
 import os
-import libro
+import book
 import pygst
 pygst.require("0.10")
 import gst
@@ -35,7 +35,7 @@ class Controller:
     Gets configuration, if not exists create it
     """
     toc = []
-    configuration = self.settings.getConfiguration()
+    configuration = self.sets.getConfiguration()
     if configuration[0] != None:
       self.p.changeVolume(configuration[5]-1)
       if os.path.exists(configuration[1]):
@@ -79,7 +79,7 @@ class Controller:
     selection.set_filename(path)
     # Configure file extension
     filter.add_pattern("*.html")
-    selection.add_filter(filtro)
+    selection.add_filter(filter)
 
     response = selection.run()
     if response == gtk.RESPONSE_OK:
@@ -113,7 +113,7 @@ class Controller:
     if self.p.getState() == "Playing":
       play = True
       self.p.playPause()
-    books = self.sets.showBooks()
+    books = self.sets.getBooks()
     if books != []:
       book_titles = []
       for i in range(len(books)):
@@ -177,7 +177,7 @@ class Controller:
       self.showMessage(_("Warning"), _("There are currently nno playing book"))
 
 
-  def displayTranslationInfoCallback(self, w, data):
+  def displayBookTranslationCallback(self, w, data):
     """
     Displays book translation information
     """
@@ -233,7 +233,7 @@ class Controller:
       self.showMessage(_("Warning"), _("Tehre are currently no playing book"))
 
 
-  def sincViewAudio(self):
+  def syncViewAudio(self):
     """
     This function syncs the book view with the audio when playing forwards or user press a navigation option
     """
@@ -259,7 +259,7 @@ class Controller:
     if self.bookOpened():
       self.p.stop()
       self.b.setReadPosition(0, 0, 0)
-      self.syncVistaAudio()
+      self.syncViewAudio()
       if self.p.getState() == "Playing":
         self.p.playPause()
     else:
@@ -356,7 +356,7 @@ class Controller:
       self.showMessage(_("Warning"), _("There are currently no playing book"))
 
 
-  def goToPriorPage(self, w, data):
+  def goToPriorPageCallback(self, w, data):
     """
     Goto prior page
     """

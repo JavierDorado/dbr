@@ -252,7 +252,7 @@ class View:
       z = y[0].firstChild.toprettyxml()
       l.append(y[0])
       iter = self.treestore.append(None, ['%s' % z])
-    title = self.c.getBookTitle()
+    title = self.c.displayBookTitle()
     self.window.set_title("Daisy Book Reader - " + title)
 
 
@@ -281,8 +281,8 @@ class View:
     """
     cursor_pos = self.treeview.get_cursor()
     aux = list(cursor_pos)
-    list = list(aux[0])
-    self.c.syncAudioView(list[0])
+    listed = list(aux[0])
+    self.c.syncAudioView(listed[0])
 
 
   def closeApplication(self, w, data):

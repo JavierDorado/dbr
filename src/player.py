@@ -58,7 +58,7 @@ class Player:
     self.player.set_state(gst.STATE_NULL)
     bus = self.player.get_bus()
     bus.add_signal_watch()
-    bus.connect('message', self.on_message)
+    bus.connect('message', self.onMessage)
 
   def prueba(self, l):
     i = 0
@@ -156,7 +156,7 @@ class Player:
     if t == gst.MESSAGE_EOS:
       self.player.set_state(gst.STATE_NULL)
       self.state = "Stopped"
-      self.c.sync_view_audio()
+      self.c.syncViewAudio()
     elif t == gst.MESSAGE_ERROR:
       self.player.set_state(gst.STATE_NULL)
       self.state = "Stopped"

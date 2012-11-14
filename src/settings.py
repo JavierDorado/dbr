@@ -41,7 +41,7 @@ class Settings:
       self.createConfigFile()
 
 
-  def saveConfiguration(self, informacion):
+  def saveConfiguration(self, info):
     """
     Saves configuration and latest book reading position to the config file
     info: Configuration and book position for the latest read book
@@ -170,8 +170,8 @@ class Settings:
     """
     Returns the books saved in the config file
     """
+    books = []
     if len(self.settings) > 1:
-      books = []
       i = 0
       while (i < (len(self.settings)-1)):
         i = i + 1
