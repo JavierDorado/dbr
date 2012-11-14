@@ -88,6 +88,7 @@ class Controlador:
     path = os.path.abspath("ncc")
     seleccion.set_filename(path)
     # Extension permitida para el fichero
+    filtro.set_name(_("DAISY 2.0/2.02 book (*.html)"))
     filtro.add_pattern("*.html")
     seleccion.add_filter(filtro)
 
