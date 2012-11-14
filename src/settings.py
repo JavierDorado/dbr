@@ -21,9 +21,9 @@ import os
 
 from dbr_i18n import _          #For i18n support
 
-class Registro:
+class Settings:
   """
-  Clase para la gestión del guardado, manipulación y guardado de la configuración y las marcas de los libros
+  Handles working with configuration and bookmarks 
   """
 
   def __init__(self):
