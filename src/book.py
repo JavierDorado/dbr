@@ -115,7 +115,7 @@ class Book:
     for x in nodelist:
       if len(x.childNodes) > 1:
         list, list1 = self.getSubTree(x.childNodes, list, list1)
-      elif len(x.childNodes) == 1:
+      elif len(x.childNodes) == 1 and x.tagName != u'span':
         list1.append(x)
         if x.hasAttribute('class'):
           at = x.attributes['class']
