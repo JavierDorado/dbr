@@ -6597,7 +6597,7 @@ fi
 
 
 
-ac_config_files="$ac_config_files Makefile src/dbr src/dbr_i18n.py dbr.spec po/Makefile.in icons/Makefile src/controlador.py src/vista.py src/Makefile"
+ac_config_files="$ac_config_files Makefile src/dbr src/dbr_i18n.py dbr.spec po/Makefile.in icons/Makefile src/controller.py src/view.py src/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -7342,8 +7342,8 @@ do
     "dbr.spec") CONFIG_FILES="$CONFIG_FILES dbr.spec" ;;
     "po/Makefile.in") CONFIG_FILES="$CONFIG_FILES po/Makefile.in" ;;
     "icons/Makefile") CONFIG_FILES="$CONFIG_FILES icons/Makefile" ;;
-    "src/controlador.py") CONFIG_FILES="$CONFIG_FILES src/controlador.py" ;;
-    "src/vista.py") CONFIG_FILES="$CONFIG_FILES src/vista.py" ;;
+    "src/controller.py") CONFIG_FILES="$CONFIG_FILES src/controller.py" ;;
+    "src/view.py") CONFIG_FILES="$CONFIG_FILES src/view.py" ;;
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
     "po/stamp-it") CONFIG_COMMANDS="$CONFIG_COMMANDS po/stamp-it" ;;
 

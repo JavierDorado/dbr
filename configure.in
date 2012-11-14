@@ -85,8 +85,8 @@ src/dbr_i18n.py
 dbr.spec
 po/Makefile.in
 icons/Makefile
-src/controlador.py
-src/vista.py
+src/controller.py
+src/view.py
 src/Makefile
 ])
 
