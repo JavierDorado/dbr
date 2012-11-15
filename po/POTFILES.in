@@ -2,10 +2,11 @@
 # Please keep this file sorted alphabetically.
 [encoding: UTF-8]
 dbr.desktop.in
-src/controlador.py.in
+src/book.py
+src/controller.py.in
 src/dbr.py
-src/libro.py
-src/registro.py
-src/reproductor.py
-src/vista.py.in
+src/player.py
+src/settings.py
+src/view.py.in
+
 

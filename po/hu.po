@@ -7,7 +7,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dbr\n"
 "Report-Msgid-Bugs-To: \n"
+<<<<<<< HEAD
 "POT-Creation-Date: 2012-11-14 08:54+0100\n"
+=======
+"POT-Creation-Date: 2012-11-15 09:07+0100\n"
+>>>>>>> sourceTranslation
 "PO-Revision-Date: 2012-10-13 08:45+0200\n"
 "Last-Translator: Attila Hammer <hammera@pickup.hu>\n"
 "Language-Team: Hungarian\n"
@@ -25,6 +29,7 @@ msgstr "DAISY Könyv Olvasó"
 msgid "Read Daisy Talking Books"
 msgstr "DAISY könyvek olvasása"
 
+<<<<<<< HEAD
 #. Creacion de un nuevo control de seleccion de fichero
 #: ../src/controlador.py.in:83
 msgid "Open book"
@@ -210,6 +215,192 @@ msgid "The help file can not be found"
 msgstr "A súgó fájl nem található"
 
 #: ../src/controlador.py.in:649
+=======
+#: ../src/controller.py.in:73
+msgid "Open book"
+msgstr "DAISY könyv megnyitása"
+
+#. Configure file extension and filter name
+#: ../src/controller.py.in:81
+msgid "Daisy 2.0/2.02 book (*.html)"
+msgstr "DAISY 2.0/2.02 könyv (*.html)"
+
+#: ../src/controller.py.in:93
+msgid "Failed to open"
+msgstr "Hiba a megnyitáskor"
+
+#: ../src/controller.py.in:93
+msgid " The book can not be opened"
+msgstr "A könyvet nem lehetett megnyitni."
+
+#: ../src/controller.py.in:97
+msgid "Canceled selection"
+msgstr "A kijelölés megszakítva"
+
+#: ../src/controller.py.in:97
+msgid "No book has been selected"
+msgstr "Nem lett könyv kiválasztva."
+
+#: ../src/controller.py.in:122
+msgid "Recently opened books"
+msgstr "Utoljára megnyitott könyvek"
+
+#: ../src/controller.py.in:122
+msgid "Choose the book which you want to open"
+msgstr "Válassza ki azt a könyvet, melyet meg szeretne nyitni."
+
+#: ../src/controller.py.in:132 ../src/controller.py.in:136
+#: ../src/controller.py.in:178 ../src/controller.py.in:195
+#: ../src/controller.py.in:216 ../src/controller.py.in:234
+#: ../src/controller.py.in:267 ../src/controller.py.in:289
+#: ../src/controller.py.in:309 ../src/controller.py.in:315
+#: ../src/controller.py.in:329 ../src/controller.py.in:343
+#: ../src/controller.py.in:357 ../src/controller.py.in:371
+#: ../src/controller.py.in:385 ../src/controller.py.in:399
+#: ../src/controller.py.in:419 ../src/controller.py.in:425
+#: ../src/controller.py.in:435 ../src/controller.py.in:445
+#: ../src/controller.py.in:455 ../src/controller.py.in:477
+#: ../src/controller.py.in:501 ../src/controller.py.in:503
+#: ../src/controller.py.in:507 ../src/controller.py.in:529
+#: ../src/controller.py.in:531 ../src/controller.py.in:535
+msgid "Warning"
+msgstr "Figyelem!"
+
+#: ../src/controller.py.in:132
+msgid "Specified book doesn't match with the book currently in that path"
+msgstr "A megadott könyv nem létezik a megadott elérési útvonalon"
+
+#: ../src/controller.py.in:134
+msgid "You have not selected any book"
+msgstr "Nem választott ki egyetlen könyvet sem"
+
+#: ../src/controller.py.in:136
+msgid "There are no saved books"
+msgstr "Nincsenek elmentett könyvek"
+
+#: ../src/controller.py.in:174
+msgid "Book information"
+msgstr "Könyv információ"
+
+#: ../src/controller.py.in:178
+msgid "There are currently nno playing book"
+msgstr "Jelenleg nincs éppen lejátszott könyv"
+
+#: ../src/controller.py.in:191
+msgid "Book translation information"
+msgstr "A könyv fordítási információi"
+
+#: ../src/controller.py.in:195 ../src/controller.py.in:289
+#: ../src/controller.py.in:315 ../src/controller.py.in:329
+#: ../src/controller.py.in:343 ../src/controller.py.in:357
+#: ../src/controller.py.in:435 ../src/controller.py.in:445
+#: ../src/controller.py.in:455 ../src/controller.py.in:477
+msgid "There are currently no playing book"
+msgstr "Jelenleg nincs éppen lejátszott könyv"
+
+#: ../src/controller.py.in:212
+msgid "Elapsed playback time"
+msgstr "Eltelt lejátszási idő"
+
+#: ../src/controller.py.in:216 ../src/controller.py.in:234
+#: ../src/controller.py.in:267 ../src/controller.py.in:371
+#: ../src/controller.py.in:385 ../src/controller.py.in:399
+#: ../src/controller.py.in:425 ../src/controller.py.in:507
+#: ../src/controller.py.in:535
+msgid "Tehre are currently no playing book"
+msgstr "Jelenleg nincs éppen lejátszott könyv"
+
+#: ../src/controller.py.in:230
+msgid "Total book's playback time"
+msgstr "Az összes könyv lejátszási ideje"
+
+#: ../src/controller.py.in:303
+msgid "Goo to chapter"
+msgstr "Ugrás egy fejezetre"
+
+#: ../src/controller.py.in:303
+msgid "Select which chapter do you want to go"
+msgstr "Válassza ki azt a fejezetet, ahová ugrani szeretne"
+
+#: ../src/controller.py.in:309
+msgid "You have not selected any chapter"
+msgstr "Nem választott ki egyetlen fejezetet sem"
+
+#: ../src/controller.py.in:311 ../src/controller.py.in:421
+#: ../src/controller.py.in:473
+msgid "Error"
+msgstr "Hiba"
+
+#: ../src/controller.py.in:311
+msgid "Don't exist any chapter in the book"
+msgstr "A könyvben nincs egyetlen fejezet sem"
+
+#: ../src/controller.py.in:411
+msgid "Go to page"
+msgstr "Ugrás egy oldalra"
+
+#: ../src/controller.py.in:411
+msgid "Enter the page which you want to go"
+msgstr "Írja be azt az oldalszámot, ahová ugrani szeretne"
+
+#: ../src/controller.py.in:419
+msgid "Page out of range"
+msgstr "Az oldalszám kívül esik a megadható oldalak számán"
+
+#: ../src/controller.py.in:421
+msgid "You have not entered a number"
+msgstr "Nem írt be számot"
+
+#: ../src/controller.py.in:467
+msgid "Set bookmark"
+msgstr "Könyvjelző beállítása"
+
+#: ../src/controller.py.in:467
+msgid "Enter the bookmark name"
+msgstr "Adja meg a könyvjelző nevét"
+
+#: ../src/controller.py.in:473
+msgid "You have not entered a bookmark name"
+msgstr "Nem adta meg a könyvjelző nevét"
+
+#: ../src/controller.py.in:495
+msgid "Bookmark list"
+msgstr "Könyvjelzők listája"
+
+#: ../src/controller.py.in:495
+msgid "Choose the bookmark which you want to go"
+msgstr "Válassza ki azt a könyvjelzőt, ahová ugrani szeretne"
+
+#: ../src/controller.py.in:501 ../src/controller.py.in:529
+msgid "You have not selected any bookmark"
+msgstr "Nem választott ki egyetlen könyvjelzőt sem"
+
+#: ../src/controller.py.in:503
+msgid "There are not bookmarks for this book"
+msgstr "Ehhez a könyvhöz nincsenek könyvjelzők"
+
+#: ../src/controller.py.in:525
+msgid "Bookmarks deletion"
+msgstr "Könyvjelzők törlése"
+
+#: ../src/controller.py.in:525
+msgid "Choose the bookmark which you want to delete"
+msgstr "Válassza ki azt a könyvjelzőt, melyet törölni szeretne"
+
+#: ../src/controller.py.in:531
+msgid "Don't exist bookmarks for this book"
+msgstr "Ehhez a könyvhöz nincsenek beállított könyvjelzők"
+
+#: ../src/controller.py.in:613 ../src/controller.py.in:673
+msgid "Warning!"
+msgstr "Figyelmeztetés!"
+
+#: ../src/controller.py.in:613 ../src/controller.py.in:673
+msgid "The help file can not be found"
+msgstr "A súgó fájl nem található"
+
+#: ../src/controller.py.in:636
+>>>>>>> sourceTranslation
 msgid ""
 "This program has been translated by:\n"
 "\n"
@@ -219,7 +410,11 @@ msgstr ""
 "\n"
 "Hammer Attila\n"
 
+<<<<<<< HEAD
 #: ../src/controlador.py.in:650
+=======
+#: ../src/controller.py.in:637
+>>>>>>> sourceTranslation
 msgid ""
 "This program is under GNU/General Public License version 3. See accompanying "
 "COPYING file for more details."
@@ -228,6 +423,7 @@ msgstr ""
 "terjesztve. A részletekért nézze meg a COPYING fájlt a program "
 "forráskódjában."
 
+<<<<<<< HEAD
 #: ../src/vista.py.in:63
 msgid "_File"
 msgstr "_Fájl"
@@ -426,6 +622,220 @@ msgstr "Könyvjelző beállítása"
 msgid "Table of contents"
 msgstr "Tartalomjegyzék"
 
+=======
+#. Translators: this string the main DBR window title
+#: ../src/view.py.in:25 ../src/view.py.in:266
+msgid "Daisy Book Reader"
+msgstr "DAISY Könyv Olvasó"
+
+#: ../src/view.py.in:62
+msgid "_File"
+msgstr "_Fájl"
+
+#: ../src/view.py.in:63 ../src/view.py.in:64 ../src/view.py.in:65
+#: ../src/view.py.in:66
+msgid "File"
+msgstr "Fájl"
+
+#: ../src/view.py.in:63
+msgid "_Open book"
+msgstr "Könyv _megnyitása..."
+
+#: ../src/view.py.in:64
+msgid "_Find book"
+msgstr "Köny_v keresése"
+
+#: ../src/view.py.in:65
+msgid "_Close book"
+msgstr "Könyv _bezárása"
+
+#: ../src/view.py.in:66
+msgid "_Quit"
+msgstr "_Kilépés"
+
+#: ../src/view.py.in:68
+msgid "_Control"
+msgstr "_Vezérlés"
+
+#: ../src/view.py.in:69 ../src/view.py.in:70 ../src/view.py.in:71
+#: ../src/view.py.in:72 ../src/view.py.in:73 ../src/view.py.in:74
+msgid "Control"
+msgstr "Vezérlés"
+
+#: ../src/view.py.in:69
+msgid "_Play-Pause"
+msgstr "_Lejátszás/szünet"
+
+#: ../src/view.py.in:70
+msgid "_Mute"
+msgstr "_Némítás"
+
+#: ../src/view.py.in:71
+msgid "_Stop"
+msgstr "Leállí_tás"
+
+#: ../src/view.py.in:72
+msgid "_Volume"
+msgstr "_Hangerő"
+
+#: ../src/view.py.in:73 ../src/view.py.in:74
+msgid "Volume"
+msgstr "Hangerő"
+
+#: ../src/view.py.in:73
+msgid "Increase volume"
+msgstr "Hangerő _növelése"
+
+#: ../src/view.py.in:74
+msgid "Decrease volume"
+msgstr "Hangerő _csökkentése"
+
+#: ../src/view.py.in:76
+msgid "_Navigation"
+msgstr "_Navigáció"
+
+#: ../src/view.py.in:77 ../src/view.py.in:78 ../src/view.py.in:79
+#: ../src/view.py.in:80 ../src/view.py.in:81 ../src/view.py.in:82
+msgid "Navigation"
+msgstr "Navigáció"
+
+#: ../src/view.py.in:77
+msgid "Previous chapter"
+msgstr "_Előző fejezet"
+
+#: ../src/view.py.in:78
+msgid "Next chapter"
+msgstr "_Következő fejezet"
+
+#: ../src/view.py.in:79
+msgid "Previous page"
+msgstr "Előző oldal"
+
+#: ../src/view.py.in:80
+msgid "Next page"
+msgstr "Következő oldal"
+
+#: ../src/view.py.in:81
+msgid "Previous paragraph"
+msgstr "Előző bekezdés"
+
+#: ../src/view.py.in:82
+msgid "Next paragraph"
+msgstr "Következő bekezdés"
+
+#: ../src/view.py.in:83 ../src/view.py.in:84 ../src/view.py.in:85
+msgid "_Go to"
+msgstr "_Ugrás"
+
+#: ../src/view.py.in:84
+msgid "Chapter"
+msgstr "Fejezet"
+
+#: ../src/view.py.in:85
+msgid "Page"
+msgstr "Oldal"
+
+#: ../src/view.py.in:86
+msgid "_Bookmarks"
+msgstr "_Könyvjelzők"
+
+#: ../src/view.py.in:87 ../src/view.py.in:88 ../src/view.py.in:89
+msgid "Bookmarks"
+msgstr "Könyvjelzők"
+
+#: ../src/view.py.in:87
+msgid "_Set bookmark"
+msgstr "_Könyvjelző beállítása"
+
+#: ../src/view.py.in:88
+msgid "_Delete bookmarks"
+msgstr "Könyvjelző _törlése"
+
+#: ../src/view.py.in:89
+msgid "_List bookmarks"
+msgstr "Könyvjelzők _listájának megjelenítése"
+
+#: ../src/view.py.in:90
+msgid "_Info"
+msgstr "_Információ"
+
+#: ../src/view.py.in:91 ../src/view.py.in:92 ../src/view.py.in:93
+#: ../src/view.py.in:94
+msgid "Info"
+msgstr "Információ"
+
+#: ../src/view.py.in:91
+msgid "_Book info"
+msgstr "_Könyv információ"
+
+#: ../src/view.py.in:92
+msgid "Book _translation information"
+msgstr "_A könyv _fordítási információi"
+
+#: ../src/view.py.in:93
+msgid "Playback _duration"
+msgstr "Lejátszás _sebessége"
+
+#: ../src/view.py.in:94
+msgid "Total play _duration"
+msgstr "Lejátszás _teljes sebessége"
+
+#: ../src/view.py.in:95
+msgid "_Help"
+msgstr "_Súgó"
+
+#: ../src/view.py.in:96 ../src/view.py.in:97 ../src/view.py.in:98
+msgid "Help"
+msgstr "Súgó"
+
+#: ../src/view.py.in:96
+msgid "_User help"
+msgstr "_Felhasználói kézikönyv"
+
+#: ../src/view.py.in:97
+msgid "_About DBR"
+msgstr "A DBR _névjegye"
+
+#: ../src/view.py.in:98
+msgid "_License"
+msgstr "_Licencinformációk"
+
+#. Options for toolbar: open...
+#: ../src/view.py.in:121
+msgid "Open"
+msgstr "Könyv _megnyitása..."
+
+#: ../src/view.py.in:135
+msgid "Stop"
+msgstr "Leállítás"
+
+#: ../src/view.py.in:142
+msgid "Next Chapter"
+msgstr "Következő fejezet"
+
+#: ../src/view.py.in:148
+msgid "Previous Chapter"
+msgstr "Előző fejezet"
+
+#: ../src/view.py.in:157
+msgid "Set Bookmark"
+msgstr "Könyvjelző beállítása"
+
+#. Creation of the TreeViewColumn for displaying data
+#: ../src/view.py.in:174
+msgid "Table of contents"
+msgstr "Tartalomjegyzék"
+
+#. Translators: this string the DBR application window title when the user opening a daisy book. %s variable containing the opened daisy book title
+#: ../src/view.py.in:258
+#, python-format
+msgid "Daisy Book Reader - %s"
+msgstr "DAISY Könyv Olvasó - %s"
+
+#~ msgid "Find books"
+#~ msgstr "Könyvek keresése"
+
+>>>>>>> sourceTranslation
 #~ msgid "/File/_Open book"
 #~ msgstr "/Fájl/Könyv _Megnyitása..."
 

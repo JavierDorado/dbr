@@ -51,9 +51,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 subdir = src
 DIST_COMMON = $(dbr_python_PYTHON) $(srcdir)/Makefile.am \
-	$(srcdir)/Makefile.in $(srcdir)/controlador.py.in \
-	$(srcdir)/dbr.in $(srcdir)/dbr_i18n.py.in \
-	$(srcdir)/vista.py.in
+	$(srcdir)/Makefile.in $(srcdir)/controller.py.in \
+	$(srcdir)/dbr.in $(srcdir)/dbr_i18n.py.in $(srcdir)/view.py.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
 	$(top_srcdir)/configure.in
@@ -61,7 +60,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
-CONFIG_CLEAN_FILES = dbr dbr_i18n.py controlador.py vista.py
+CONFIG_CLEAN_FILES = dbr dbr_i18n.py controller.py view.py
 CONFIG_CLEAN_VPATH_FILES =
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
@@ -242,11 +241,11 @@ dbr_pathdir = $(pyexecdir)
 bin_SCRIPTS = dbr
 dbr_python_PYTHON = \
 	dbr.py \
-	controlador.py \
-	libro.py \
-	reproductor.py \
-	vista.py \
-	registro.py \
+	controller.py \
+	book.py \
+	player.py \
+	view.py \
+	settings.py \
 	__init__.py \
 	dbr_i18n.py 
 
@@ -288,9 +287,9 @@ dbr: $(top_builddir)/config.status $(srcdir)/dbr.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 dbr_i18n.py: $(top_builddir)/config.status $(srcdir)/dbr_i18n.py.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-controlador.py: $(top_builddir)/config.status $(srcdir)/controlador.py.in
+controller.py: $(top_builddir)/config.status $(srcdir)/controller.py.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-vista.py: $(top_builddir)/config.status $(srcdir)/vista.py.in
+view.py: $(top_builddir)/config.status $(srcdir)/view.py.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 install-binSCRIPTS: $(bin_SCRIPTS)
 	@$(NORMAL_INSTALL)

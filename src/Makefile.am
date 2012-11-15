@@ -4,11 +4,11 @@ dbr_pathdir=$(pyexecdir)
 bin_SCRIPTS = dbr
 dbr_python_PYTHON = \
 	dbr.py \
-	controlador.py \
-	libro.py \
-	reproductor.py \
-	vista.py \
-	registro.py \
+	controller.py \
+	book.py \
+	player.py \
+	view.py \
+	settings.py \
 	__init__.py \
 	dbr_i18n.py 
 
