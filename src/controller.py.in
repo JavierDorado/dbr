@@ -127,7 +127,7 @@ class Controller:
           self.v.clearModel()
           self.b = aux_book
           self.v.displayBook(self.b.getToc())
-          self.sync_view_audio()
+          self.syncViewAudio()
         else:
           self.showMessage(_("Warning"), _("Specified book doesn't match with the book currently in that path"))
       else:
@@ -136,7 +136,6 @@ class Controller:
       self.showMessage(_("Warning"), _("There are no saved books"))
     if (self.p.getState() == "Paused") and play:
       self.p.playPause()
-
 
 
   def closeBookCallback(self, w, data):
