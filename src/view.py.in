@@ -21,7 +21,8 @@ class View:
     """
     window = gtk.Window(gtk.WINDOW_TOPLEVEL)
     window.connect("destroy", self.destroyApplication)
-    window.set_title("Daisy Book Reader")
+    # Translators: this string the main DBR window title
+    window.set_title(_("Daisy Book Reader"))
     window.set_border_width(1)
     window.set_default_size(640, 480)
     return window
@@ -253,7 +254,8 @@ class View:
       l.append(y[0])
       iter = self.treestore.append(None, ['%s' % z])
     title = self.c.displayBookTitle()
-    self.window.set_title("Daisy Book Reader - " + title)
+    # Translators: this string the DBR application window title when the user opening a daisy book. %s variable containing the opened daisy book title
+    self.window.set_title(_("Daisy Book Reader - %s") %(title))
 
 
   def clearModel(self):
@@ -261,7 +263,7 @@ class View:
     Clears the tree model 
     """
     self.treestore.clear()
-    self.window.set_title("Daisy Book Reader")
+    self.window.set_title(_("Daisy Book Reader"))
 
 
 

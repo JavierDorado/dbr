@@ -77,7 +77,8 @@ class Controller:
     filter = gtk.FileFilter()
     path = os.path.abspath("ncc")
     selection.set_filename(path)
-    # Configure file extension
+    # Configure file extension and filter name
+    filter.set_name(_("Daisy 2.0/2.02 book (*.html)"))
     filter.add_pattern("*.html")
     selection.add_filter(filter)
 
