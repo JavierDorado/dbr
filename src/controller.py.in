@@ -121,7 +121,7 @@ class Controller:
         book_titles.append(books[i][0])
       book_index = self.showCombobox(_("Recently opened books"), _("Choose the book which you want to open"), book_titles)
       if book_index != None:
-        aux_book = book.Book(books[book_toc][1])
+        aux_book = book.Book(books[book_index][1])
         if aux_book.getBookTitle() == books[book_index][0]:
           self.p.stop()
           self.v.clearModel()
