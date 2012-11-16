@@ -171,7 +171,7 @@ class Book:
       new_toc_pos = new_toc_pos + pos
       if new_toc_pos < len(self.toc):
         if self.toc[new_toc_pos].hasAttribute('class'):
-          classval = self.toc[nueva_pos_indice].attributes['class'].value
+          classval = self.toc[new_toc_pos].attributes['class'].value
           if classval == 'chapter':
             found = 1
             realized = 1
