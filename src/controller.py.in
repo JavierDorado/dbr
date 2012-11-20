@@ -34,21 +34,21 @@ class Controller:
     """
     Gets configuration, if not exists create it
     """
-    toc = []
+    ncc = []
     configuration = self.sets.getConfiguration()
     if configuration[0] != None:
       self.p.changeVolume(configuration[5]-1)
       if os.path.exists(configuration[1]):
         self.b = book.Book(configuration[1], (configuration[2]), (configuration[3]), configuration[4])
         if configuration[0] == self.b.getBookTitle():
-          toc = self.b.getToc()
+          ncc = self.b.getNcc()
         else:
           self.b = None
       else:
         self.b = None
     else:
       pass
-    return toc, configuration[2]
+    return ncc, configuration[2]
 
 
   def destroy(self, widget):
@@ -96,12 +96,12 @@ class Controller:
     elif response == gtk.RESPONSE_CANCEL:
       self.showMessage(_("Canceled selection"), _("No book has been selected"))
     selection.destroy()
-    toc = self.b.getToc()
-    if len(toc) > 1:
-      return toc
+    ncc = self.b.getNcc()
+    if len(ncc) > 1:
+      return ncc
 
   def change_play_pause_toolbutton(self, state):
-    if state == gst.STATE_PAUSED:
+    if state == "Paused":
       self.v.view_play_icon()
     else:
       self.v.view_pause_icon()
@@ -126,8 +126,8 @@ class Controller:
           self.p.stop()
           self.v.clearModel()
           self.b = aux_book
-          self.v.displayBook(self.b.getToc())
-          self.syncViewAudio()
+          self.v.displayBook(self.b.getNCC())
+          self.syncViewAudio() #here?
         else:
           self.showMessage(_("Warning"), _("Specified book doesn't match with the book currently in that path"))
       else:
@@ -237,7 +237,7 @@ class Controller:
     """
     This function syncs the book view with the audio when playing forwards or user press a navigation option
     """
-    self.v.updateView(self.b.getTocPosition())
+    self.v.updateView(self.b.getNccPosition())
     file, pos_begin, pos_end = self.b.getAudioTrack()
     self.p.play(file, pos_begin, pos_end)
 
@@ -247,7 +247,7 @@ class Controller:
     Synchronizes the audio with the view of the book toc when user press a navigation command or uses the mouse
     """
     self.p.stop()
-    self.b.updateBooknodesPosition(toc_pos)
+#    self.b.updateBooknodesPosition(toc_pos)
     file, pos_begin, pos_end = self.b.getAudioTrack()
     self.p.play(file, pos_begin, pos_end)
 
@@ -258,7 +258,7 @@ class Controller:
     """
     if self.bookOpened():
       self.p.stop()
-      self.b.setReadPosition(0, 0, 0)
+      self.b.setReadPosition(0,  0)
       self.syncViewAudio()
       if self.p.getState() == "Playing":
         self.p.playPause()
@@ -302,8 +302,8 @@ class Controller:
         chapter_pos = self.showCombobox(_("Goo to chapter"), _("Select which chapter do you want to go"), chapters)
         if chapter_pos != None:
           self.p.stop()
-          self.b.updateBooknodesPosition(chapters_pos[chapter_pos])
-          self.syncViewAudio()
+#          self.b.updateBooknodesPosition(chapters_pos[chapter_pos])
+          self.syncViewAudio() #here?
         else:
           self.showMessage(_("Warning"), _("You have not selected any chapter"))
       else:
@@ -412,7 +412,7 @@ class Controller:
         switch, pos = self.b.goToPage(page)
         if switch == 1:
           self.p.stop()
-          self.b.getAudioTracks(self.b.booknodes[pos])
+          self.b.getAudioTracks(self.b.ncc[pos])
           self.syncViewAudio()
         else:
           self.showMessage(_("Warning"), _("Page out of range"))
@@ -494,7 +494,7 @@ class Controller:
         bookmark_index = self.showCombobox(_("Bookmark list"), _("Choose the bookmark which you want to go"), bookmarks_names)
         if bookmark_index != None:
           self.p.stop()
-          self.b.setReadPosition(bookmarks[bookmark_index][1], bookmarks[bookmark_index][2], bookmarks[bookmark_index][3])
+          self.b.setReadPosition(bookmarks[bookmark_index][1], bookmarks[bookmark_index][2])
           self.syncViewAudio()
         else:
           self.showMessage(_("Warning"), _("You have not selected any bookmark"))
