@@ -58,7 +58,6 @@ class Book:
           break
     return book_title
 
-
   def getNumberOfPages(self):
     """
     Returns the total number of pages in the book
@@ -84,14 +83,14 @@ class Book:
     return info
 
 
-  def getToc(self):
+  def getNcc(self):
     """
     Returns the table of contents from the book's ncc
     """
     return self.ncc
 
 
-  def getTocPosition(self):
+  def getNccPosition(self):
     """
     Returhns the current toc position
     """
@@ -120,7 +119,6 @@ class Book:
           list.append(x)
     return list
 
-
   def getTree(self):
     """
     Gets book's ncc content
@@ -131,7 +129,6 @@ class Book:
     if size >= 1:
       list = self.getSubTree(nodes, list)
       self.ncc = list
-
 
   def getChapters(self):
     """
@@ -154,100 +151,34 @@ class Book:
     Changes to the next or prior chapter
     pos: Wether is next or prior chapter
     """
-    found = 0
-    realized = 0
-    new_toc_pos = self.ncc_pos
-    while (found == 0) and (new_toc_pos > 0) and (new_toc_pos < len(self.ncc)):
-      new_toc_pos = new_toc_pos + pos
-      if new_toc_pos < len(self.ncc):
-        if self.ncc[new_toc_pos].hasAttribute('class'):
-          classval = self.ncc[new_toc_pos].attributes['class'].value
+    found = False
+    new_ncc_pos = self.ncc_pos
+    while (not found) and (new_ncc_pos > 0) and (new_ncc_pos < len(self.ncc)):
+      new_ncc_pos = new_ncc_pos + pos
+      if new_ncc_pos < len(self.ncc):
+        if self.ncc[new_ncc_pos].hasAttribute('class'):
+          classval = self.ncc[new_ncc_pos].attributes['class'].value
           if classval == 'chapter':
-            found = 1
-            realized = 1
-          self.next_toc_pos = self.ncc_pos = new_toc_pos
-        self.audio_index = 0
-    return realized
+            found = True
+          self.next_ncc_pos = self.ncc_pos = new_ncc_pos
+          self.audio_index = 0
+    return found
 
   def nextOrPriorPage(self, pos):
     """
     Changes next or prior page
     pos: Wether is next or prior page
     """
-    found = 0
-    realized = 0
-    new_booknodes_pos = self.pos_booknodes
-    while (found == 0) and (new_booknodes_pos > 0) and (new_booknodes_pos < len(self.booknodes)):
-      new_booknodes_pos = new_booknodes_pos + pos
-      if new_booknodes_pos < len(self.booknodes):
-        if self.booknodes[new_booknodes_pos].hasAttribute('class'):
-          classval = self.booknodes[new_booknodes_pos].attributes['class'].value
+    found = False
+    new_ncc_pos = self.ncc_pos
+    while (not found) and (new_ncc > 0) and (new_ncc_pos < len(self.ncc)):
+      new_ncc_pos = new_ncc_pos + pos
+      if new_ncc_pos < len(self.ncc):
+        if self.ncc[new_ncc_pos].hasAttribute('class'):
+          classval = self.ncc[new_ncc_pos].attributes['class'].value
           if classval == 'page-normal':
-            found = 1
-            realized = 1
-    if found == 1:
-      self.updateTocPosition(new_booknodes_pos)
-    return realized
-
-
-  def updateTocPosition(self, new_booknodes_pos):
-    """
-    Updates toc position related to booknodes position
-    new_booknodes_pos: New position in the booknodes list
-    """
-    found = 0
-    i = new_booknodes_pos
-    while (found == 0) and (i > 0):
-      i = i - 1
-      if self.booknodes[i].hasAttribute('class'):
-        classval = self.booknodes[i].attributes['class'].value
-        if (classval == 'title') or (classval == 'jacket') or (classval == 'front') or (classval == 'title-page') or (classval == 'copyright-page') or (classval == 'acknowledgement') or (classval == 'prolog') or (classval == 'introduction') or (classval == 'dedication') or (classval == 'foreword') or (classval == 'preface') or (classval == 'print-toc') or (classval == 'part') or (classval == 'chapter') or (classval == 'section') or (classval == 'sub-section') or (classval == 'minor-head') or (classval == 'bibliography') or (classval == 'glossary') or (classval == 'appendix') or (classval == 'index') or (classval == 'index-category'):
-          id_booknodes = self.booknodes[i].attributes['id'].value
-          found = 1
-          finished = 0
-          j = len(self.ncc)-1
-          while (finished == 0) and (j >= 0):
-            id_toc = self.ncc[j].attributes['id'].value
-            if id_toc == id_booknodes:
-              self.next_toc_pos = self.ncc_pos = j
-              self.next_booknodes_pos = self.pos_booknodes = new_booknodes_pos
-              self.audio_index = 0
-              finished = 1
-            if j > 0:
-              j = j - 1
-      elif not self.booknodes[i].hasAttribute('class'):
-        id_booknodes = self.booknodes[i].attributes['id'].value
-        found = 1
-        finished = 0
-        j = len(self.ncc)-1
-        while (finished == 0) and (j >= 0):
-          id_toc = self.ncc[j].attributes['id'].value
-          if id_toc == id_booknodes:
-            self.next_toc_pos = self.ncc_pos = j
-            self.next_booknodes_pos = self.pos_booknodes = new_booknodes_pos
-            self.audio_index = 0
-            finished = 1
-          if j > 0:
-            j = j - 1
-
-
-  def updateBooknodesPosition(self, new_toc_pos):
-    """
-    Updates booknodes position related to toc position
-    new_toc_pos: New position in toc
-    """
-    found = 0
-    i = 0
-    id_toc = self.ncc[new_toc_pos].attributes['id'].value
-    while (found == 0) and (i < (len(self.booknodes)-1)):
-      id_booknodes = self.booknodes[i].attributes['id'].value
-      if id_toc == id_booknodes:
-        self.next_toc_pos = self.ncc_pos = new_toc_pos
-        self.next_booknodes_pos = self.pos_booknodes = i
-        self.audio_index = 0
-        self.getAudioTracks(self.booknodes[self.pos_booknodes])
-        found = 1
-      i = i + 1
+            found = True
+    return found
 
   def setReadPosition(self, ncc_pos, audio_index):
     """
@@ -257,7 +188,6 @@ class Book:
     self.audio_index = audio_index
     self.getAudioTracks(self.ncc[self.ncc_pos])
 
-
   def goToPage(self, page):
     """
     Go to a specified page 
@@ -266,19 +196,18 @@ class Book:
     number_of_pages = self.getNumberOfPages()
     number_of_pages = int(number_of_pages)
     i = 0
-    found = 0
+    found = False
     realized = 0 
     if (page >= 0) and (page <= number_of_pages):
-      while (i < len(self.ncc)) and (found == 0):
-        if self.booknodes[i].hasAttribute('class'):
-          classval = self.booknodes[i].attributes['class'].value
+      while (i < len(self.ncc)) and (not found):
+        if self.ncc[i].hasAttribute('class'):
+          classval = self.ncc[i].attributes['class'].value
           if classval == "page-normal":
-            num = self.booknodes[i].childNodes[0].firstChild
+            num = self.ncc[i].childNodes[0].firstChild
             if page == int(num.toprettyxml()):
-              found = 1
-              realized = 1
+              found = True
         i = i + 1
-    return realized, i
+    return found, i
 
 
   def nextOrPriorText(self, pos):
@@ -373,7 +302,6 @@ class Book:
           l.append(end)
           m.append(l)
 #          print "Audio track " + str(j) + "\n" + "Audio file is: " + str(l[0]) + "Begins at " + str(l[1]) + " and ends at " + str(l[2]) #dbg
-
     self.m = m
 
 
@@ -432,11 +360,11 @@ class Book:
     Returns current playing time in seconds
     """
     audio_index = self.audio_index
-    node = self.pos_booknodes
+    node = self.ncc_pos
     duration = 0
     i = 0
     while i <= node:
-      href = self.booknodes[i].firstChild.attributes['href'].value
+      href = self.ncc[i].firstChild.attributes['href'].value
       smil = href.split("#")
       full_path = self.path[0] + smil[0]
       file = MD.parse(full_path)
