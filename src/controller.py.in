@@ -247,7 +247,6 @@ class Controller:
     Synchronizes the audio with the view of the book toc when user press a navigation command or uses the mouse
     """
     self.p.stop()
-#    self.b.updateBooknodesPosition(toc_pos)
     file, pos_begin, pos_end = self.b.getAudioTrack()
     self.p.play(file, pos_begin, pos_end)
 
@@ -302,7 +301,6 @@ class Controller:
         chapter_pos = self.showCombobox(_("Goo to chapter"), _("Select which chapter do you want to go"), chapters)
         if chapter_pos != None:
           self.p.stop()
-#          self.b.updateBooknodesPosition(chapters_pos[chapter_pos])
           self.syncViewAudio() #here?
         else:
           self.showMessage(_("Warning"), _("You have not selected any chapter"))
