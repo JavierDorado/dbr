@@ -417,7 +417,7 @@ class Controller:
         switch, pos = self.b.goToPage(page)
         if switch == 1:
           self.p.stop()
-          self.b.getAudioTracks(self.b.ncc[pos])
+          self.b.setReadPosition(pos-1,0)
           self.syncViewAudio()
         else:
           self.showMessage(_("Warning"), _("Page out of range"))
