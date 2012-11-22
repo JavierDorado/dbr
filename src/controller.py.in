@@ -70,6 +70,8 @@ class Controller:
     """
     Handle opening a book 
     """
+    if self.p.getState() == "Playing":
+      self.p.playPause()
     selection = gtk.FileChooserDialog(_("Open book"), None, gtk.FILE_CHOOSER_ACTION_OPEN, (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK))
     selection.set_default_response(gtk.RESPONSE_OK)
 
@@ -88,13 +90,13 @@ class Controller:
         # Open the book
         filename = selection.get_filename()
         self.b = book.Book(filename)
-
+        
       except IOError:
         self.showMessage(_("Failed to open"), _(" The book can not be opened"))
-
-
     elif response == gtk.RESPONSE_CANCEL:
       self.showMessage(_("Canceled selection"), _("No book has been selected"))
+      if self.p.getState() == "Paused":
+        self.p.playPause()
     selection.destroy()
     ncc = self.b.getNcc()
     if len(ncc) > 1:
@@ -126,8 +128,8 @@ class Controller:
           self.p.stop()
           self.v.clearModel()
           self.b = aux_book
-          self.v.displayBook(self.b.getNCC())
-          self.syncViewAudio() #here?
+          self.v.displayBook(self.b.getNcc())
+          self.syncViewAudio()
         else:
           self.showMessage(_("Warning"), _("Specified book doesn't match with the book currently in that path"))
       else:
@@ -238,14 +240,17 @@ class Controller:
     This function syncs the book view with the audio when playing forwards or user press a navigation option
     """
     cursor_pos = self.v.treeview.get_cursor()
-    aux = list(cursor_pos)
-    listed = list(aux[0])
-    if self.b.getNccPosition() != listed[0]:
-      self.v.updateView(self.b.getNccPosition())
-    elif play:
-      file, pos_begin, pos_end = self.b.getAudioTrack()
-      self.p.play(file, pos_begin, pos_end)
-
+    print cursor_pos
+    if cursor_pos[0] != None:
+      aux = list(cursor_pos)
+      listed = list(aux[0])
+      if self.b.getNccPosition() != listed[0]:
+        self.v.updateView(self.b.getNccPosition())
+      elif play:
+        file, pos_begin, pos_end = self.b.getAudioTrack()
+        self.p.play(file, pos_begin, pos_end)
+    else:
+      self.v.treeview.set_cursor(self.b.getNccPosition(),None)
 
   def syncAudioView(self, ncc_pos):
     """
@@ -326,7 +331,7 @@ class Controller:
       switch = self.b.nextOrPriorChapter(1)
       if switch == 1:
         self.p.stop()
-        self.b.getAudioTracks(self.b.getCurrentNode())
+        self.b.setReadPosition(self.b.ncc_pos,0)
         self.syncViewAudio()
     else:
       self.showMessage(_("Warning"), _("There are currently no playing book"))
@@ -340,7 +345,7 @@ class Controller:
       switch = self.b.nextOrPriorChapter(-1)
       if switch == 1:
         self.p.stop()
-        self.b.getAudioTracks(self.b.getCurrentNode())
+        self.b.setReadPosition(self.b.ncc_pos,0)
         self.syncViewAudio()
     else:
       self.showMessage(_("Warning"), _("There are currently no playing book"))
@@ -352,12 +357,10 @@ class Controller:
     """
     if self.bookOpened():
       switch = self.b.nextOrPriorPage(1)
-      if switch == 1:
+      if switch:
         self.p.stop()
-        self.b.getAudioTracks(self.b.getCurrentNode())
+        self.b.setReadPosition(self.b.getNccPosition(),0)
         self.syncViewAudio()
-    else:
-      self.showMessage(_("Warning"), _("There are currently no playing book"))
 
 
   def goToPriorPageCallback(self, w, data):
@@ -366,12 +369,10 @@ class Controller:
     """
     if self.bookOpened():
       switch = self.b.nextOrPriorPage(-1)
-      if switch == 1:
+      if switch:
         self.p.stop()
-        self.b.getAudioTracks(self.b.getCurrentNode())
+        self.b.setReadPosition(self.b.getNccPosition(),0)
         self.syncViewAudio()
-    else:
-      self.showMessage(_("Warning"), _("Tehre are currently no playing book"))
 
 
   def goToPriorTextCallback(self, w, data):

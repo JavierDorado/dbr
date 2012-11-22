@@ -123,11 +123,9 @@ class Player:
     if self._state == "Playing":
       self.player.set_state(gst.STATE_PAUSED)
       self._state = "Paused"
-      self.c.change_play_pause_toolbutton(self._state)
     elif self._state == "Paused":
       self.player.set_state(gst.STATE_PLAYING)
       self._state = "Playing"
-      self.c.change_play_pause_toolbutton(self._state)
 
   def getCurrentNs(self):
     """

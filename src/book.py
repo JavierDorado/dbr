@@ -177,6 +177,7 @@ class Book:
         if self.ncc[new_ncc_pos].hasAttribute('class'):
           classval = self.ncc[new_ncc_pos].attributes['class'].value
           if classval == 'page-normal':
+            self.ncc_pos=new_ncc_pos
             found = True
     return found
 
