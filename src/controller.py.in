@@ -37,9 +37,9 @@ class Controller:
     ncc = []
     configuration = self.sets.getConfiguration()
     if configuration[0] != None:
-      self.p.changeVolume(configuration[5]-1)
+      self.p.changeVolume(configuration[4]-1)
       if os.path.exists(configuration[1]):
-        self.b = book.Book(configuration[1], (configuration[2]), (configuration[3]), configuration[4])
+        self.b = book.Book(configuration[1], (configuration[2]), (configuration[3]))
         if configuration[0] == self.b.getBookTitle():
           ncc = self.b.getNcc()
         else:
@@ -237,16 +237,25 @@ class Controller:
     """
     This function syncs the book view with the audio when playing forwards or user press a navigation option
     """
-    self.v.updateView(self.b.getNccPosition())
-    file, pos_begin, pos_end = self.b.getAudioTrack()
-    self.p.play(file, pos_begin, pos_end)
+    cursor_pos = self.v.treeview.get_cursor()
+    aux = list(cursor_pos)
+    listed = list(aux[0])
+    if self.b.getNccPosition() != listed[0]:
+      self.v.updateView(self.b.getNccPosition())
+    else:
+      file, pos_begin, pos_end = self.b.getAudioTrack()
+      self.p.play(file, pos_begin, pos_end)
 
 
-  def syncAudioView(self, toc_pos):
+  def syncAudioView(self, ncc_pos):
     """
     Synchronizes the audio with the view of the book toc when user press a navigation command or uses the mouse
     """
+    print "mandando a parar"
     self.p.stop()
+    print "Pidiendo los audios de la posicion " + str(ncc_pos)
+    self.b.setReadPosition(ncc_pos,0)
+    print self.b.m
     file, pos_begin, pos_end = self.b.getAudioTrack()
     self.p.play(file, pos_begin, pos_end)
 
@@ -257,10 +266,8 @@ class Controller:
     """
     if self.bookOpened():
       self.p.stop()
-      self.b.setReadPosition(0,  0)
+      self.b.setReadPosition(0,  -1)
       self.syncViewAudio()
-      if self.p.getState() == "Playing":
-        self.p.playPause()
     else:
       self.showMessage(_("Warning"), _("Tehre are currently no playing book"))
 
@@ -405,7 +412,7 @@ class Controller:
       if self.p.getState() == "Playing":
         play = True
         self.p.playPause()
-      page = self.showEntryText(_("Go to page"), _("Enter the page which you want to go"), 1)
+      page = self.showEntryText(_("Go to page"), _("Enter the page which you want to go"), 4)
       if page.isdigit():
         switch, pos = self.b.goToPage(page)
         if switch == 1:

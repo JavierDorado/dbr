@@ -64,7 +64,7 @@ class Settings:
     Creates DBR configuration if not exists
     """
     self.settings = [0]
-    config = [None, None, [0, 0, 0], 1]
+    config = [None, None, [0, 0], 1]
     self.settings[0] = config
     f = open(self.config_file, "w")
     pickle.dump(self.settings, f)
@@ -80,39 +80,39 @@ class Settings:
     # First we look if book was previously saved
     if len(self.settings) > 1:
       i = 0
-      found = 0
-      while (i < (len(self.settings)-1)) and found == 0:
+      found = False
+      while (i < (len(self.settings)-1)) and not found:
         i = i + 1
         if self.settings[i][0] == bookmark[0]:
-          found = 1
-      if found == 1:
+          found = True
+      if found:
         # The book is saved
         # Look for the bookmark if was previously saved
         j = 1
-        finish = 0
-        while (j < (len(self.settings[i])-1)) and (finish == 0):
+        finish = False
+        while (j < (len(self.settings[i])-1)) and (not finish):
           j = j + 1
-          if self.settings[i][j][0] == bookmark[5]:
-            finish = 1
-        if finish == 1:
+          if self.settings[i][j][0] == bookmark[4]:
+            finish = True
+        if finish:
           # Bookmark exists
-          self.settings[i][j][1:4] = bookmark[2:5]
+          self.settings[i][j][1:3] = bookmark[2:4]
         else:
           # Bookmark doesn't exist
-          aux[0] = bookmark[5]
-          aux = aux + bookmark[2:5]
+          aux[0] = bookmark[4]
+          aux = aux + bookmark[2:4]
           self.settings[i].append(aux)
       else:
         # The book doesn't exist
         self.settings.append(bookmark[0:2])
-        aux[0] = bookmark[5]
-        aux = aux + bookmark[2:5]
+        aux[0] = bookmark[4]
+        aux = aux + bookmark[2:4]
         self.settings[i+1].append(aux)
     else:
       # There are not any book saved
       self.settings.append(bookmark[0:2])
-      aux[0] = bookmark[5]
-      aux = aux + bookmark[2:5]
+      aux[0] = bookmark[4]
+      aux = aux + bookmark[2:4]
       pos = len(self.settings) - 1
       self.settings[pos].append(aux)
     print self.settings #dbg
@@ -128,12 +128,12 @@ class Settings:
     # Look if there is any book with bookmarks
     if len(self.settings) > 1:
       i = 0
-      found = 0
-      while (i < (len(self.settings)-1)) and found == 0:
+      found = False
+      while (i < (len(self.settings)-1)) and not found:
         i = i + 1
         if self.settings[i][0] == book_title:
-          found = 1
-      if found == 1:
+          found = True
+      if found:
         # Get available bookmarks
         bookmarks = []
         j = 2
@@ -152,11 +152,11 @@ class Settings:
     Deletes a bookmark for a specified book
     """
     i = 0
-    found = 0
-    while (i < len(self.settings)) and (found == 0):
+    found = False
+    while (i < len(self.settings)) and (not found):
       i = i + 1
       if book_title == self.settings[i][0]:
-        found = 1
+        found = True
     if len(self.settings[i]) == 3:
       self.settings.pop(i)
     else:

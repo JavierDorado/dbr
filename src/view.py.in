@@ -7,7 +7,6 @@ import gtk
 import controller, book, player
 import xml.dom.minidom as MD
 
-
 from dbr_i18n import _          #For i18n support
 
 class View:
@@ -275,7 +274,7 @@ class View:
     self.treeview.handler_block(self.cursorChanged)
     self.treeview.set_cursor_on_cell(t, self.tvcolumn, self.cell)
     self.treeview.handler_unblock(self.cursorChanged)
-
+    self.c.syncViewAudio()
 
   def updateAudio(self, data):
     """
@@ -283,6 +282,7 @@ class View:
     """
     cursor_pos = self.treeview.get_cursor()
     aux = list(cursor_pos)
+    print aux
     listed = list(aux[0])
     self.c.syncAudioView(listed[0])
 

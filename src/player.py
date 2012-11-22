@@ -66,23 +66,31 @@ class Player:
     pos_begin: Begin position for playing
     pos_end: End position for playing
     """
-    if self._state == "Stopped":
-      if os.path.exists(file):
+    if self._state == "Stopped" or self.player.get_by_name("file-source").get_property('location') != file:
+      print "estaba parado"
+      if os.path.exists(file) and self.player.get_by_name("file-source").get_property('location') != file:
+        self.player.set_state(gst.STATE_NULL)
+        print "nuevo fichero" + file
         self.player.get_by_name("file-source").set_property('location', file)
-        self.player.set_state(gst.STATE_PAUSED)
-        time.sleep(0.5)
-        if self.player.seek(1.0, self.time_format, gst.SEEK_FLAG_FLUSH, gst.SEEK_TYPE_SET, pos_begin, gst.SEEK_TYPE_SET, pos_end):
-          self.player.set_state(gst.STATE_PLAYING)
+    time.sleep(0.1)
+    self.player.set_state(gst.STATE_PAUSED)
+    if self.player.seek(1.0, self.time_format, gst.SEEK_FLAG_FLUSH | gst.SEEK_FLAG_SEGMENT, gst.SEEK_TYPE_SET, pos_begin, gst.SEEK_TYPE_SET, pos_end):
+      time.sleep(0.2)
+      self._state="Playing"
+      print "poniendo estado a playing"
+      self.player.set_state(gst.STATE_PLAYING)
+    else:
+      print "no se pudo seek"
 
   def stop(self):
     """
     Function for stopping an audio track playback
     """
-    if self._state == "Playing" or self._state == "Paused":
-      self.player.set_state(gst.STATE_NULL)
-      time.sleep(0.1) #Ensure we have enough time for changing state
-      self._state = "Stopped"
-
+#    if self._state == "Playing" or self._state == "Paused":
+    self.player.set_state(gst.STATE_NULL)
+    time.sleep(0.1) #Ensure we have enough time for changing state
+    print "poniendo estado a stopped"
+    self._state = "Stopped"
 
   def onMessage(self, bus, message):
     """
@@ -92,9 +100,17 @@ class Player:
     """
     t = message.type
     if t == gst.MESSAGE_EOS:
-      self.stop()
+      print "final del stream"
+      self.player.set_state(gst.STATE_PAUSED)
+      self.c.syncViewAudio()
+    elif t == gst.MESSAGE_BUFFERING:
+      print "buffering"
+    elif t == gst.MESSAGE_SEGMENT_DONE: 
+      print "final del segmento"
+      self.player.set_state(gst.STATE_NULL)
       self.c.syncViewAudio()
     elif t == gst.MESSAGE_ERROR:
+      print "error, error"
       self.player.set_state(gst.STATE_NULL)
       self._state = "Stopped"
       err, debug = message.parse_error()
