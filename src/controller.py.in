@@ -233,7 +233,7 @@ class Controller:
       self.showMessage(_("Warning"), _("Tehre are currently no playing book"))
 
 
-  def syncViewAudio(self):
+  def syncViewAudio(self, play=True):
     """
     This function syncs the book view with the audio when playing forwards or user press a navigation option
     """
@@ -242,7 +242,7 @@ class Controller:
     listed = list(aux[0])
     if self.b.getNccPosition() != listed[0]:
       self.v.updateView(self.b.getNccPosition())
-    else:
+    elif play:
       file, pos_begin, pos_end = self.b.getAudioTrack()
       self.p.play(file, pos_begin, pos_end)
 
@@ -266,8 +266,7 @@ class Controller:
     """
     if self.bookOpened():
       self.p.stop()
-      self.b.setReadPosition(0,  -1)
-      self.syncViewAudio()
+      self.syncViewAudio(False)
     else:
       self.showMessage(_("Warning"), _("Tehre are currently no playing book"))
 
