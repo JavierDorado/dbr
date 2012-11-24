@@ -240,7 +240,6 @@ class Controller:
     This function syncs the book view with the audio when playing forwards or user press a navigation option
     """
     cursor_pos = self.v.treeview.get_cursor()
-    print cursor_pos
     if cursor_pos[0] != None:
       aux = list(cursor_pos)
       listed = list(aux[0])
@@ -256,11 +255,8 @@ class Controller:
     """
     Synchronizes the audio with the view of the book toc when user press a navigation command or uses the mouse
     """
-    print "mandando a parar"
     self.p.stop()
-    print "Pidiendo los audios de la posicion " + str(ncc_pos)
     self.b.setReadPosition(ncc_pos,0)
-    print self.b.m
     file, pos_begin, pos_end = self.b.getAudioTrack()
     self.p.play(file, pos_begin, pos_end)
 
@@ -380,28 +376,18 @@ class Controller:
     Goto prior text
     """
     if self.bookOpened():
-      switch = self.b.nextOrPriorText(-1)
-      if switch == 1:
-        self.p.stop()
-        self.b.getAudioTracks(self.b.getCurrentNode())
-        self.syncViewAudio()
-    else:
-      self.showMessage(_("Warning"), _("Tehre are currently no playing book"))
-
+      self.p.stop()
+      self.b.nextOrPriorParagraph(-1)
+      self.b.setReadPosition(self.b.getNccPosition(),self.b.audio_index)
+      self.syncViewAudio()
 
   def goToNextTextCallback(self, w, data):
     """
     Goto next text group
     """
     if self.bookOpened():
-      switch = self.b.nextOrPriorText(1)
-      if switch == 1:
-        self.p.stop()
-        self.b.getAudioTracks(self.b.getCurrentNode())
-        self.syncViewAudio()
-    else:
-      self.showMessage(_("Warning"), _("Tehre are currently no playing book"))
-
+      self.p.stop()
+      self.syncViewAudio()
 
   def goToPageCallback(self, w, data):
     """

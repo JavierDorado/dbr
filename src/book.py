@@ -181,6 +181,20 @@ class Book:
             found = True
     return found
 
+  def nextOrPriorParagraph(self, pos):
+    """
+
+    Changes next or prior paragraph or phrase
+
+    pos: Wether is next or prior paragraph
+    """
+    if pos < 0:
+      self.audio_index = self.audio_index - 2
+      if self.audio_index < 0:
+        self.ncc_pos = self.ncc_pos -1
+        self.getAudioTracks(self.getCurrentNode())
+        self.audio_index = len(self.m)-2
+        print "retrocedi a la pista" + str(self.audio_index)
   def setReadPosition(self, ncc_pos, audio_index):
     """
     Sets current reading position in ncc and audio
@@ -236,7 +250,6 @@ class Book:
     """
     Gets an audio track and its begin and end playing time
     """
-    print "antes ncc pos es " + str(self.ncc_pos) + "y next ncc pos es " + str(self.next_ncc_pos)
     if self.next_ncc_pos == (self.ncc_pos + 1):
       self.ncc_pos = self.next_ncc_pos
     if self.audio_index == -1:
@@ -254,7 +267,6 @@ class Book:
       else:
         self.next_ncc_pos = self.ncc_pos = 0
         self.audio_index = 0
-    print "despues ncc pos es " + str(self.ncc_pos) + "y next ncc pos es " + str(self.next_ncc_pos)
     return file, pos_begin, pos_end
 
 
@@ -291,7 +303,6 @@ class Book:
 #            print "Audio track " + str(j)+ "\n" + "Audio file is: " + str(l[0]) + "Begins at " + str(l[1]) + " and ends at " + str(l[2]) #dbg
               m.append(l)
     else:
-      print "no hay pares"
       audio = seq[0].getElementsByTagName('audio')
       for j in range(len(audio)):
         if audio[j].hasAttribute('clip-begin'):
