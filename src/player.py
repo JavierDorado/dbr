@@ -38,8 +38,7 @@ class Player:
     """
     Initializes the player for playing audio tracks of the DTB
     """
-    self.state = "Stopped"
-    self.activate = "Yes"
+    self._state = "Stopped"
     self.time_format = gst.Format(gst.FORMAT_TIME)
     self.player = gst.Pipeline("player")
     source = gst.element_factory_make("filesrc", "file-source")
@@ -50,7 +49,7 @@ class Player:
     self.player.add(conv)
     volume = gst.element_factory_make("volume", "volume")
     self.player.add(volume)
-    # speed = gst.element_factory_make("speed", "speed")
+#     speed = gst.element_factory_make("speed", "speed")
     # self.player.add(speed)
     sink = gst.element_factory_make("pulsesink", "pulseaudio-output")
     self.player.add(sink)
@@ -60,56 +59,6 @@ class Player:
     bus.add_signal_watch()
     bus.connect('message', self.onMessage)
 
-  def prueba(self, l):
-    i = 0
-    while (i < len(l)):
-      if self.estado == "Parado" or self.estado == "Pausado":
-        if os.path.exists(l[i][0]):
-          self.reproductor.get_by_name("file-source").set_property('location', l[i][0])
-          self.estado = "Reproduciendo"
-          self.reproductor.set_state(gst.STATE_PAUSED)
-          time.sleep(0.1)
-          self.reproductor.seek(1.0, self.time_format, gst.SEEK_FLAG_FLUSH, gst.SEEK_TYPE_SET, l[i][1], gst.SEEK_TYPE_SET, l[i][2])
-          time.sleep(0.1)
-          self.reproductor.set_state(gst.STATE_PLAYING)
-          espera = (l[i][2]-l[i][1]) / 1000000000 + 0.1
-          time.sleep(espera)
-          i = i + 1
-          self.reproductor.set_state(gst.STATE_NULL)
-      elif self.estado == "Reproduciendo":
-        if os.path.exists(l[i][0]):
-          self.reproductor.get_by_name("file-source").set_property('location', l[i][0])
-          # self.estado = "Reproduciendo"
-          self.reproductor.set_state(gst.STATE_PAUSED)
-          time.sleep(0.1)
-          self.reproductor.seek(1.0, self.time_format, gst.SEEK_FLAG_FLUSH, gst.SEEK_TYPE_SET, l[i][1], gst.SEEK_TYPE_SET, l[i][2])
-          self.reproductor.set_state(gst.STATE_PLAYING)
-          espera = (l[i][2]-l[i][1]) / 1000000000 + 0.1
-          time.sleep(espera)
-          i = i + 1
-          self.reproductor.set_state(gst.STATE_NULL)
-
-  def startStop(self, l):
-    i = 0
-    if self.state == "Stopped":
-      while ((self.player.get_state() == gst.STATE_NULL) and (i <= range(len(l)))):
-        if os.path.exists(l[i][0]):
-          self.state = "Playing"
-          self.player.get_by_name("file-source").set_property('location', l[0])
-          self.player.set_state(gst.STATE_PLAYING)
-          time.sleep(0.1)
-          self.player.seek(1.0, self.time_format, gst.SEEK_FLAG_FLUSH, gst.SEEK_TYPE_SET, l[i:1], gst.SEEK_TYPE_SET, l[i:2])
-    else:
-      while self.player.get_state == (gst.STATE_PAUSED or gst.STATE_PLAYING) and i < len(l):
-        if self.player.get_message == gst.MESSAGE_EOS:
-          self.player.set_state(gst.STATE_NULL)
-          self.state = "Stopped"
-          self.player.set_state(gst.STATE_PLAYING)
-          time.sleep(0.1)
-          self.player.seek(1.0, self.time_format, gst.SEEK_FLAG_FLUSH, gst.SEEK_TYPE_SET, l[i:1], gst.SEEK_TYPE_SET, l[i:2])
-          i = i + 1
-
-
   def play(self, file, pos_begin, pos_end):
     """
     Function for playing an audio track.
@@ -117,34 +66,33 @@ class Player:
     pos_begin: Begin position for playing
     pos_end: End position for playing
     """
-    if self.state == "Stopped" and self.activate == "Yes":
-      if os.path.exists(file):
-        self.state = "Playing"
-        self.player.get_by_name("file-source").set_property('location', file)
-        self.player.set_state(gst.STATE_PAUSED)
-        time.sleep(0.0001)
-        self.player.seek(1.0, self.time_format, gst.SEEK_FLAG_FLUSH, gst.SEEK_TYPE_SET, pos_begin, gst.SEEK_TYPE_SET, pos_end)
-        self.player.set_state(gst.STATE_PLAYING)
-    elif (self.state == "Paused" or self.state == "Stopped") and self.activate == "No":
-      if os.path.exists(file):
-        self.state = "Paused"
+    if self._state == "Stopped" or self.player.get_by_name("file-source").get_property('location') != file:
+      if os.path.exists(file) and self.player.get_by_name("file-source").get_property('location') != file:
         self.player.set_state(gst.STATE_NULL)
         self.player.get_by_name("file-source").set_property('location', file)
-        self.player.set_state(gst.STATE_PAUSED)
-        time.sleep(0.0001)
-        self.player.seek(1.0, self.time_format, gst.SEEK_FLAG_FLUSH, gst.SEEK_TYPE_SET, pos_begin, gst.SEEK_TYPE_SET, pos_end)
-        self.player.set_state(gst.STATE_PAUSED)
-
-
+    time.sleep(0.1)
+    self.player.set_state(gst.STATE_PAUSED)
+    print "file:" + file + "set position begin at " + str(pos_begin) + " and end position at " + str(pos_end) #dbg
+    if self.player.seek(1.0, self.time_format, gst.SEEK_FLAG_FLUSH | gst.SEEK_FLAG_SEGMENT, gst.SEEK_TYPE_SET, pos_begin, gst.SEEK_TYPE_SET, pos_end):
+      time.sleep(0.2)
+      self._state="Playing"
+      self.player.set_state(gst.STATE_PLAYING)
+    else:
+      print "Can not seek. Trying a simple seek." #dbg
+      self.player.set_state(gst.STATE_PAUSED)
+      time.sleep(0.1)
+#      self.player.seek_simple(self.time_format, gst.SEEK_FLAG_FLUSH | gst.SEEK_FLAG_SEGMENT, pos_begin)
+      self.player.seek(1.0, self.time_format, gst.SEEK_FLAG_FLUSH | gst.SEEK_FLAG_SEGMENT, gst.SEEK_TYPE_SET, pos_begin, gst.SEEK_TYPE_SET, pos_end)
+      self.player.set_state(gst.STATE_PLAYING)
 
   def stop(self):
     """
     Function for stopping an audio track playback
     """
-    if self.state == "Playing" or self.state == "Paused":
-      self.player.set_state(gst.STATE_NULL)
-      self.state = "Stopped"
-
+#    if self._state == "Playing" or self._state == "Paused":
+    self.player.set_state(gst.STATE_NULL)
+    time.sleep(0.1) #Ensure we have enough time for changing state
+    self._state = "Stopped"
 
   def onMessage(self, bus, message):
     """
@@ -154,12 +102,17 @@ class Player:
     """
     t = message.type
     if t == gst.MESSAGE_EOS:
+      self.player.set_state(gst.STATE_PAUSED)
+      self.c.syncViewAudio()
+    elif t == gst.MESSAGE_BUFFERING:
+      print "buffering"
+    elif t == gst.MESSAGE_SEGMENT_DONE: 
       self.player.set_state(gst.STATE_NULL)
-      self.state = "Stopped"
       self.c.syncViewAudio()
     elif t == gst.MESSAGE_ERROR:
+      print "error, error"
       self.player.set_state(gst.STATE_NULL)
-      self.state = "Stopped"
+#      self._state = "Stopped"
       err, debug = message.parse_error()
       print "Error: %s" % err, debug
 
@@ -167,17 +120,12 @@ class Player:
     """
     Function for toggle between play and pause
     """
-    if self.state == "Playing":
+    if self._state == "Playing":
       self.player.set_state(gst.STATE_PAUSED)
-      self.state = "Paused"
-      self.activate = "No"
-#      self.c.change_play_pause_toolbutton(gst.STATE_PAUSED)
-    elif self.state == "Paused" or self.activate == "No":
+      self._state = "Paused"
+    elif self._state == "Paused":
       self.player.set_state(gst.STATE_PLAYING)
-      self.state = "Playing"
-      self.activate = "Yes"
-      self.c.change_play_pause_toolbutton(gst.STATE_PLAYING)
-
+      self._state = "Playing"
 
   def getCurrentNs(self):
     """
@@ -191,7 +139,7 @@ class Player:
     """
     Returns the player status
     """
-    return self.state
+    return self._state
 
 
   def changeVolume(self, inc):

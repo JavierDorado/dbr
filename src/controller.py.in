@@ -34,21 +34,21 @@ class Controller:
     """
     Gets configuration, if not exists create it
     """
-    toc = []
+    ncc = []
     configuration = self.sets.getConfiguration()
     if configuration[0] != None:
-      self.p.changeVolume(configuration[5]-1)
+      self.p.changeVolume(configuration[4]-1)
       if os.path.exists(configuration[1]):
-        self.b = book.Book(configuration[1], (configuration[2]), (configuration[3]), configuration[4])
+        self.b = book.Book(configuration[1], (configuration[2]), (configuration[3]))
         if configuration[0] == self.b.getBookTitle():
-          toc = self.b.getToc()
+          ncc = self.b.getNcc()
         else:
           self.b = None
       else:
         self.b = None
     else:
       pass
-    return toc, configuration[2]
+    return ncc, configuration[2]
 
 
   def destroy(self, widget):
@@ -70,6 +70,8 @@ class Controller:
     """
     Handle opening a book 
     """
+    if self.p.getState() == "Playing":
+      self.p.playPause()
     selection = gtk.FileChooserDialog(_("Open book"), None, gtk.FILE_CHOOSER_ACTION_OPEN, (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK))
     selection.set_default_response(gtk.RESPONSE_OK)
 
@@ -88,20 +90,20 @@ class Controller:
         # Open the book
         filename = selection.get_filename()
         self.b = book.Book(filename)
-
+        
       except IOError:
         self.showMessage(_("Failed to open"), _(" The book can not be opened"))
-
-
     elif response == gtk.RESPONSE_CANCEL:
       self.showMessage(_("Canceled selection"), _("No book has been selected"))
+      if self.p.getState() == "Paused":
+        self.p.playPause()
     selection.destroy()
-    toc = self.b.getToc()
-    if len(toc) > 1:
-      return toc
+    ncc = self.b.getNcc()
+    if len(ncc) > 1:
+      return ncc
 
   def change_play_pause_toolbutton(self, state):
-    if state == gst.STATE_PAUSED:
+    if state == "Paused":
       self.v.view_play_icon()
     else:
       self.v.view_pause_icon()
@@ -126,7 +128,7 @@ class Controller:
           self.p.stop()
           self.v.clearModel()
           self.b = aux_book
-          self.v.displayBook(self.b.getToc())
+          self.v.displayBook(self.b.getNcc())
           self.syncViewAudio()
         else:
           self.showMessage(_("Warning"), _("Specified book doesn't match with the book currently in that path"))
@@ -233,21 +235,28 @@ class Controller:
       self.showMessage(_("Warning"), _("Tehre are currently no playing book"))
 
 
-  def syncViewAudio(self):
+  def syncViewAudio(self, play=True):
     """
     This function syncs the book view with the audio when playing forwards or user press a navigation option
     """
-    self.v.updateView(self.b.getTocPosition())
-    file, pos_begin, pos_end = self.b.getAudioTrack()
-    self.p.play(file, pos_begin, pos_end)
+    cursor_pos = self.v.treeview.get_cursor()
+    if cursor_pos[0] != None:
+      aux = list(cursor_pos)
+      listed = list(aux[0])
+      if self.b.getNccPosition() != listed[0]:
+        self.v.updateView(self.b.getNccPosition())
+      elif play:
+        file, pos_begin, pos_end = self.b.getAudioTrack()
+        self.p.play(file, pos_begin, pos_end)
+    else:
+      self.v.treeview.set_cursor(self.b.getNccPosition(),None)
 
-
-  def syncAudioView(self, toc_pos):
+  def syncAudioView(self, ncc_pos):
     """
     Synchronizes the audio with the view of the book toc when user press a navigation command or uses the mouse
     """
     self.p.stop()
-    self.b.updateBooknodesPosition(toc_pos)
+    self.b.setReadPosition(ncc_pos,0)
     file, pos_begin, pos_end = self.b.getAudioTrack()
     self.p.play(file, pos_begin, pos_end)
 
@@ -258,10 +267,7 @@ class Controller:
     """
     if self.bookOpened():
       self.p.stop()
-      self.b.setReadPosition(0, 0, 0)
-      self.syncViewAudio()
-      if self.p.getState() == "Playing":
-        self.p.playPause()
+      self.syncViewAudio(False)
     else:
       self.showMessage(_("Warning"), _("Tehre are currently no playing book"))
 
@@ -302,8 +308,7 @@ class Controller:
         chapter_pos = self.showCombobox(_("Goo to chapter"), _("Select which chapter do you want to go"), chapters)
         if chapter_pos != None:
           self.p.stop()
-          self.b.updateBooknodesPosition(chapters_pos[chapter_pos])
-          self.syncViewAudio()
+          self.syncViewAudio() #here?
         else:
           self.showMessage(_("Warning"), _("You have not selected any chapter"))
       else:
@@ -322,7 +327,7 @@ class Controller:
       switch = self.b.nextOrPriorChapter(1)
       if switch == 1:
         self.p.stop()
-        self.b.getAudioTracks(self.b.getCurrentNode())
+        self.b.setReadPosition(self.b.ncc_pos,0)
         self.syncViewAudio()
     else:
       self.showMessage(_("Warning"), _("There are currently no playing book"))
@@ -336,7 +341,7 @@ class Controller:
       switch = self.b.nextOrPriorChapter(-1)
       if switch == 1:
         self.p.stop()
-        self.b.getAudioTracks(self.b.getCurrentNode())
+        self.b.setReadPosition(self.b.ncc_pos,0)
         self.syncViewAudio()
     else:
       self.showMessage(_("Warning"), _("There are currently no playing book"))
@@ -348,12 +353,10 @@ class Controller:
     """
     if self.bookOpened():
       switch = self.b.nextOrPriorPage(1)
-      if switch == 1:
+      if switch:
         self.p.stop()
-        self.b.getAudioTracks(self.b.getCurrentNode())
+        self.b.setReadPosition(self.b.getNccPosition(),0)
         self.syncViewAudio()
-    else:
-      self.showMessage(_("Warning"), _("There are currently no playing book"))
 
 
   def goToPriorPageCallback(self, w, data):
@@ -362,12 +365,10 @@ class Controller:
     """
     if self.bookOpened():
       switch = self.b.nextOrPriorPage(-1)
-      if switch == 1:
+      if switch:
         self.p.stop()
-        self.b.getAudioTracks(self.b.getCurrentNode())
+        self.b.setReadPosition(self.b.getNccPosition(),0)
         self.syncViewAudio()
-    else:
-      self.showMessage(_("Warning"), _("Tehre are currently no playing book"))
 
 
   def goToPriorTextCallback(self, w, data):
@@ -375,28 +376,18 @@ class Controller:
     Goto prior text
     """
     if self.bookOpened():
-      switch = self.b.nextOrPriorText(-1)
-      if switch == 1:
-        self.p.stop()
-        self.b.getAudioTracks(self.b.getCurrentNode())
-        self.syncViewAudio()
-    else:
-      self.showMessage(_("Warning"), _("Tehre are currently no playing book"))
-
+      self.p.stop()
+      self.b.nextOrPriorParagraph(-1)
+      self.b.setReadPosition(self.b.getNccPosition(),self.b.audio_index)
+      self.syncViewAudio()
 
   def goToNextTextCallback(self, w, data):
     """
     Goto next text group
     """
     if self.bookOpened():
-      switch = self.b.nextOrPriorText(1)
-      if switch == 1:
-        self.p.stop()
-        self.b.getAudioTracks(self.b.getCurrentNode())
-        self.syncViewAudio()
-    else:
-      self.showMessage(_("Warning"), _("Tehre are currently no playing book"))
-
+      self.p.stop()
+      self.syncViewAudio()
 
   def goToPageCallback(self, w, data):
     """
@@ -407,12 +398,12 @@ class Controller:
       if self.p.getState() == "Playing":
         play = True
         self.p.playPause()
-      page = self.showEntryText(_("Go to page"), _("Enter the page which you want to go"), 1)
+      page = self.showEntryText(_("Go to page"), _("Enter the page which you want to go"), 4)
       if page.isdigit():
         switch, pos = self.b.goToPage(page)
         if switch == 1:
           self.p.stop()
-          self.b.getAudioTracks(self.b.booknodes[pos])
+          self.b.setReadPosition(pos-1,0)
           self.syncViewAudio()
         else:
           self.showMessage(_("Warning"), _("Page out of range"))
@@ -494,7 +485,7 @@ class Controller:
         bookmark_index = self.showCombobox(_("Bookmark list"), _("Choose the bookmark which you want to go"), bookmarks_names)
         if bookmark_index != None:
           self.p.stop()
-          self.b.setReadPosition(bookmarks[bookmark_index][1], bookmarks[bookmark_index][2], bookmarks[bookmark_index][3])
+          self.b.setReadPosition(bookmarks[bookmark_index][1], bookmarks[bookmark_index][2])
           self.syncViewAudio()
         else:
           self.showMessage(_("Warning"), _("You have not selected any bookmark"))
