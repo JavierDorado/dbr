@@ -81,7 +81,8 @@ class Player:
       print "Can not seek. Trying a simple seek." #dbg
       self.player.set_state(gst.STATE_PAUSED)
       time.sleep(0.1)
-      self.player.seek_simple(self.time_format, gst.SEEK_FLAG_FLUSH | gst.SEEK_FLAG_SEGMENT, pos_begin)
+#      self.player.seek_simple(self.time_format, gst.SEEK_FLAG_FLUSH | gst.SEEK_FLAG_SEGMENT, pos_begin)
+      self.player.seek(1.0, self.time_format, gst.SEEK_FLAG_FLUSH | gst.SEEK_FLAG_SEGMENT, gst.SEEK_TYPE_SET, pos_begin, gst.SEEK_TYPE_SET, pos_end)
       self.player.set_state(gst.STATE_PLAYING)
 
   def stop(self):
