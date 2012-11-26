@@ -72,9 +72,16 @@ class Player:
         self.player.get_by_name("file-source").set_property('location', file)
     time.sleep(0.1)
     self.player.set_state(gst.STATE_PAUSED)
+    print "file:" + file + "set position begin at " + str(pos_begin) + " and end position at " + str(pos_end) #dbg
     if self.player.seek(1.0, self.time_format, gst.SEEK_FLAG_FLUSH | gst.SEEK_FLAG_SEGMENT, gst.SEEK_TYPE_SET, pos_begin, gst.SEEK_TYPE_SET, pos_end):
       time.sleep(0.2)
       self._state="Playing"
+      self.player.set_state(gst.STATE_PLAYING)
+    else:
+      print "Can not seek. Trying a simple seek." #dbg
+      self.player.set_state(gst.STATE_PAUSED)
+      time.sleep(0.1)
+      self.player.seek_simple(self.time_format, gst.SEEK_FLAG_FLUSH | gst.SEEK_FLAG_SEGMENT, pos_begin)
       self.player.set_state(gst.STATE_PLAYING)
 
   def stop(self):
@@ -104,7 +111,7 @@ class Player:
     elif t == gst.MESSAGE_ERROR:
       print "error, error"
       self.player.set_state(gst.STATE_NULL)
-      self._state = "Stopped"
+#      self._state = "Stopped"
       err, debug = message.parse_error()
       print "Error: %s" % err, debug
 

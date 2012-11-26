@@ -111,11 +111,12 @@ class Book:
     for x in nodelist:
       if len(x.childNodes) > 1:
         list = self.getSubTree(x.childNodes, list)
-      elif len(x.childNodes) == 1 and x.hasAttribute('class'):
-        at = x.attributes['class']
-        if (at.value in self._valid_ncc_class) or x.tagName == u'span':
-          list.append(x)
-        elif not x.hasAttribute('class'):
+      elif len(x.childNodes) == 1:
+        if x.hasAttribute("class"):
+          at = x.attributes['class']
+          if (at.value in self._valid_ncc_class) or x.tagName == u'span':
+            list.append(x)
+        else:
           list.append(x)
     return list
 
@@ -194,7 +195,7 @@ class Book:
         self.ncc_pos = self.ncc_pos -1
         self.getAudioTracks(self.getCurrentNode())
         self.audio_index = len(self.m)-2
-        print "retrocedi a la pista" + str(self.audio_index)
+
   def setReadPosition(self, ncc_pos, audio_index):
     """
     Sets current reading position in ncc and audio
@@ -290,7 +291,9 @@ class Book:
       for i in range(len(par)):
         text = par[i].getElementsByTagName('text')
         if (par[i].hasAttribute('id') and par[i].getAttribute('id') == uri[1]) or (text[0].hasAttribute('id') and text[0].getAttribute('id') == uri[1]):
+          print "Found corresponding par" #dbg
           audio = par[i].getElementsByTagName('audio')
+          print str(len(audio)) + " audios found." #dbg
           for j in range(len(audio)):
             if audio[j].hasAttribute('clip-begin'):
               audio_path = self.path[0] + audio[j].attributes['src'].value
@@ -302,6 +305,8 @@ class Book:
               l.append(end)
 #            print "Audio track " + str(j)+ "\n" + "Audio file is: " + str(l[0]) + "Begins at " + str(l[1]) + " and ends at " + str(l[2]) #dbg
               m.append(l)
+        else:
+          print "par not found" #dbg
     else:
       audio = seq[0].getElementsByTagName('audio')
       for j in range(len(audio)):
@@ -316,7 +321,7 @@ class Book:
           m.append(l)
 #          print "Audio track " + str(j) + "\n" + "Audio file is: " + str(l[0]) + "Begins at " + str(l[1]) + " and ends at " + str(l[2]) #dbg
     self.m = m
-
+    print "There are " + str(len(self.m)) + "total audios" #dbg
 
   def getNanoseconds(self, audio):
     """
