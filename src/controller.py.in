@@ -62,9 +62,8 @@ class Controller:
     """
     Load the last played book
     """
-    file, pos_begin, pos_end = self.b.getAudioTrack()
-    self.p.play(file, pos_begin, pos_end)
-
+    self.b.setReadPosition(self.b.ncc_pos,self.b.audio_index-1)
+    self.syncViewAudio()
 
   def openBook(self, w):
     """
