@@ -266,7 +266,13 @@ class Book:
         self.audio_index = 0
         self.getAudioTracks(self.ncc[self.next_ncc_pos])
       else:
-        self.next_ncc_pos = self.ncc_pos = 0
+        # Because self.ncc_pos this situation > last chapter number,
+        # self.next_ncc_pos variable need setting the last chapter
+        # number. This change fix for self.loadlatestbook function
+        # related bug to jump always the last chapter if the
+        # treeview keeped the last position before the user closed
+        # the DBR application.
+        self.next_ncc_pos = self.ncc_pos
         self.audio_index = 0
     return file, pos_begin, pos_end
 
