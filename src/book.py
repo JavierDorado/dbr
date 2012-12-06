@@ -272,8 +272,9 @@ class Book:
         # related bug to jump always the last chapter if the
         # treeview keeped the last position before the user closed
         # the DBR application.
-        self.next_ncc_pos = self.ncc_pos
+        self.next_ncc_pos = self.ncc_pos = 0
         self.audio_index = 0
+        self.getAudioTracks(self.ncc[self.next_ncc_pos])
     return file, pos_begin, pos_end
 
 
